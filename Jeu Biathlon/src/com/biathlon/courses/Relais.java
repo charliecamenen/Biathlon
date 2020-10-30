@@ -351,9 +351,8 @@ public class Relais extends Course implements Runnable{
 	}
 
 	@Override
-	public ArrayList<Performance> getPerformancesSort() {
-		// TODO Auto-generated method stub
-		return null;
+	public void performancesSort() {
+		//Adapté au format des relays
 	}
 
 }

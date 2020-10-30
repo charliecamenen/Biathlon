@@ -25,6 +25,7 @@ public class Biathlete {
 	private int ski;
 	private int rec;
 	private int reg;
+	
 	private int pot;
 	private int ren;
 	

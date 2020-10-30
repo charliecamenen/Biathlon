@@ -11,53 +11,59 @@ import com.biathlon.action.Biathlete;
 import com.biathlon.action.Performance;
 
 public class MembreClassement {
+	
+	//reference de la position 
+	private int ref_pos_x;
+	private int ref_pos_y;
 
 	//Position dans le classement
 	private int num_classement;
 	private int y_num_classement;
-	private final int x_num_classement = 463; 
-
+	private final int x_num_classement = ref_pos_x+ 30; 
+  
 	//Libelle du biathlete
 	private String libelle_biathlete;
 	private int y_libelle_biathlete;
-	private final int x_libelle_biathlete = 508; 
+	private final int x_libelle_biathlete = ref_pos_x+76; 
 	
 	//Nombre d'erreur du biathlete
 	private int erreur;
 	private int y_erreur;
-	private final int x_erreur =635;
+	private final int x_erreur =ref_pos_x+244;
 	
 	//fond du nombre d'erreur du biathlete
 	private ImageIcon ico_bg_erreur;
 	private Image img_bg_erreur;
 	private int y_bg_erreur;
-	private final int x_bg_erreur = 625;
+	private final int x_bg_erreur = ref_pos_x+ 20;
 	
 	//Temps ou retard de l'athlete
 	private long temps;
 	private int y_temps;
-	private final int x_temps = 663;
+	private final int x_temps = ref_pos_x+300;
 
 	//Retard de l'athlete
 	private long retard;
 	private int y_retard;
-	private final int x_retard = 673;
+	private final int x_retard = ref_pos_x+305;
 
 	//Background membre
 	private ImageIcon ico_bg;
 	private Image img_bg;
 	private int y_bg;
-	private final int x_bg = 453; 
+	private final int x_bg = ref_pos_x+20; 
 
 	//Drapeau
 	private ImageIcon ico_drapeau;
 	private Image img_drapeau;
 	private int y_drapeau;
-	private final int x_drapeau = 486;
+	private final int x_drapeau = ref_pos_x+ 54;
 
 
-	public MembreClassement(Biathlete biathlete, long temps, int erreur) {
+	public MembreClassement(Biathlete biathlete, long temps, int erreur, int ref_x, int ref_y) {
 		super();
+		this.ref_pos_x = ref_x;
+		this.ref_pos_y = ref_y;
 		//On créé l'image de background
 		this.ico_bg = new ImageIcon(getClass().getResource("/images/backgroundMembreClassement.png"));
 		this.img_bg = this.ico_bg.getImage();
@@ -125,6 +131,8 @@ public class MembreClassement {
 	public int getY_temps() {
 		return y_temps;
 	}
+	
+	
 
 	public long getErreur() {
 		return erreur;

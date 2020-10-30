@@ -69,7 +69,7 @@ public class Performance implements Runnable {
 	private boolean rougeSimu ;
 	//Nombre d'iteration effectuée (Pour faire debeuger les physiques je crois)
 	private int nombre_iter;
-	
+
 	//Position dans le classement
 	private int pos_classement;
 	//Taux d'energie restant
@@ -82,7 +82,7 @@ public class Performance implements Runnable {
 	private int effort;
 	//Pulsation
 	private int pulsation;
-	
+
 	//Direction vent
 	private int dir_vent;
 	//vitesse vent
@@ -91,39 +91,18 @@ public class Performance implements Runnable {
 	private float vitesse;
 	//pente
 	private float pente;
-
+	//action (0 -> Suivre , 1 -> relayer , 2-> accelerer)
+	private int id_action;
+	
 	//Constructeur de poursuite
 	public Performance(Biathlete biathlete, String type_tir, String penalite, ArrayList<Float> list_km_tir, ArrayList<Float> list_km_pointage,   ArrayList<String> list_type_tir_cd, int vitesse_jeu, int retard) {
 		super();
-		this.list_type_tir_cd =list_type_tir_cd;
-		this.biathlete = biathlete;
-		this.type_tir = type_tir;
+		//this(biathlete, type_tir, penalite,  list_km_tir,l ist_km_pointage, list_type_tir_cd, vitesse_jeu);
 		this.retard = retard;
-		this.distance = 0;
-		this.penalite_distance = 0;
-		this.avancer = false;
-		this.list_resultat_tir = new ArrayList<>();
-		this.penalite = penalite;
-		this.tir_a_realiser = init_nb_tir(type_tir);
-		this.tir_courrant = 0;
-		this.pointage_courrant = 0;
-		this.course_fini = false;
-		this.list_km_tir = list_km_tir;
-		this.list_km_pointage = list_km_pointage;
-		this.vitesse_jeu = vitesse_jeu;
-		this.nombre_fautes = 0;
-		this.physique = new Physique(biathlete.getId_equipe(),800,705);
-		//Création des tirs de l'athlete
-		this.creationTir();
-	}
 
-	//Constructeur par default 
-	public Performance(Biathlete biathlete, String type_tir, String penalite, ArrayList<Float> list_km_tir, ArrayList<Float> list_km_pointage,  ArrayList<String> list_type_tir_cd, int vitesse_jeu) {
-		super();
 		this.biathlete = biathlete;
 		this.type_tir = type_tir;
 		this.list_type_tir_cd =list_type_tir_cd;
-		this.retard = 0;
 		this.distance = 0;
 		this.penalite_distance = 0;
 		this.avancer = false;
@@ -137,7 +116,7 @@ public class Performance implements Runnable {
 		this.list_km_pointage = list_km_pointage;
 		this.nombre_fautes = 0;
 		this.physique = new Physique(biathlete.getId_equipe(),800,705);
-		
+
 		//PROVISOIR !
 		//Calcul du taux maximal d'energie (faire une fonction) FDJ, Forme , Fatigue ...
 		this.taux_energie_max = (float) 78;
@@ -149,13 +128,20 @@ public class Performance implements Runnable {
 		this.vitesse_vent = (float) 23.4;
 		this.vitesse = (float) 35.9;
 		this.pente = (float) 0.3;
+		this.pos_classement = 0;
+		this.id_action = 0;
+		
 
-		Random random_ski = new Random();
-		this.alea_niveau = (float) (this.biathlete.getSki() + random_ski.nextGaussian() * 2);
 		this.vitesse_jeu = vitesse_jeu;
 		//Création des tirs de l'athlete
 		this.creationTir();
 	}
+
+	//Constructeur par default 
+	public Performance(Biathlete biathlete, String type_tir, String penalite, ArrayList<Float> list_km_tir, ArrayList<Float> list_km_pointage,  ArrayList<String> list_type_tir_cd, int vitesse_jeu) {
+		this(biathlete, type_tir, penalite,  list_km_tir, list_km_pointage, list_type_tir_cd, vitesse_jeu,0);
+	}
+	
 
 	private void creationTir() {
 		//Boucle sur la liste des km de tir 
@@ -238,29 +224,104 @@ public class Performance implements Runnable {
 		setAvancer(true);
 	}
 
-	//Permet de calculer la vitesse pour faire avancer l'athlete
-	public void avancer() {
-		//0.000397x − y + 0.11903 = 0
-		// 0.001984 x + 0.5952
-		float distance_par_ms = (float) (0.001984 * alea_niveau  + 0.5952);
+	private float coefAspiration(float vitesse, int nombre_devant) {
+		//On parcour la liste des groupes
+		for(int i = 0; i <Joueur.course.getListe_groupe().size(); i++) {
+			//On parcour le groupe
+			for(int j = 0; j>Joueur.course.getListe_groupe().get(i).size(); i++) {
+				//Si le groupe correspond au biathlete
+				if(Joueur.course.getListe_groupe().get(i).get(j).getBiathlete().getId() == this.biathlete.getId()){
+					//On conserve sa position
+					int position_groupe = j+1;
+					break;
+				}
+			}
+		}
+		
+		return (float) 0.8;
+	}
 
-		//si il a des tour de penalité a parcourir ?
+	
+	private int calculPulsations(int effort, float pente2) {
+
+		switch(this.id_action) {
+		//Suivre
+		case 0:
+			break;
+		//Relayer
+		case 1:
+			break;
+		//Accelerer
+		case 2:
+			break;
+		}
+		
+		return (int)Math.round((1.4 * effort) +55);
+	}
+	
+	private void calculTauxEnergie() {
+		//faire un calcul pour l'acceleration aussi
+		// end; (Vitesse avec laquelle l'energie descend)
+		// acc; Durée de l'acceleration (prendre en compte le niveau de ski pour la vitesse)
+		
+		//On diminue constament le taux d'energie max
+		this.taux_energie_max -= this.calculPulsations(this.effort, this.pente) * 0.0001;
+		//On fait evoluer le taux d'energie en fonction des pulsation actuelles
+		this.taux_energie += (float)(-0.00027777777666667  * this.calculPulsations(this.effort, this.pente) + 0.0038888888733333);
+	}
+	
+	private void calculVitesse() {
+		
+		// vit; Vitesse de tir
+		// rec; Rapidité de recup lorsque les pulsations sont basses
+		// reg;  et influence sur les tirs 
+		
+		
+		//vent
+		//pente
+		double a_niveau = 0.00081632653061224;
+		double b_niveau = 0.33918367346939;
+		double b_vent = 1;
+		double a_vent = -0.00002775;
+		double a_reg = -0.12244897959184;
+		double b_reg = 14.122448979592;
+		
+		// ski; Vitesse pure
+		//Regularité
+		Random random_ski = new Random();
+		this.alea_niveau = (float) (this.biathlete.getSki() + ((random_ski.nextGaussian()-0.5) * a_reg + b_reg));
+		
+		//effort
+		float vitesse = (float) (( a_niveau * this.alea_niveau + b_niveau) * this.effort * ((a_vent * this.vitesse_vent)*this.dir_vent + b_vent) + (-4 * this.pente));
+		System.out.println(vitesse/36);
+		
+		//s'il a des tours de penalité à parcourir ?
 		if (penalite_distance > 0) {
-			penalite_distance -= distance_par_ms;
+			penalite_distance -= (float)(vitesse/36);
 		} else {
 			//On incrémente la distance
-			distance += distance_par_ms;
+			distance += (float)(vitesse/36);
 		}
-
+	}
+	
+	
+	//Permet de calculer la vitesse pour faire avancer l'athlete
+	public void avancer() {
+		//D'abord on calcul la vitesse
+		this.calculVitesse();
+		
+		//ensuite on calcul l'energie dépensée
+		this.calculTauxEnergie();
+		
 	}
 
 	public void run() {
 
 		//Tant que la course n'est pas fini
 		while(course_fini == false) {
-			
+
 			this.nombre_iter +=1;
-			
+
 			//On fait dormir le programme PAUSE 
 			try{
 				Thread.sleep((int) PAUSE/vitesse_jeu);
@@ -287,6 +348,7 @@ public class Performance implements Runnable {
 						//Si il est pas encore arrivé au pas de tir on avance
 					} else {
 						
+						//Change l'apparence du physique pour l'annimation
 						this.physique.changeApparance();
 
 						//Si ca n'est pas le cas il peut avancer tranquillement
@@ -334,11 +396,12 @@ public class Performance implements Runnable {
 				//On décrémente le compteur
 				this.CompteurSupprSimu -=1;
 
-				//Si on arrive a 0 alors on autorise
+				//Si on arrive a 0 alors on autorise la suppression de la simulation
 				if(this.CompteurSupprSimu == 0) {
 					this.supprSimu = true;
 				}
-
+				
+				//si le tir est terminé
 				if(this.supprSimu == true) {
 
 					//Si c'est le biathlete du joueur
@@ -353,7 +416,8 @@ public class Performance implements Runnable {
 
 					//On supprime la simulation
 					Joueur.course.supprimerSimulationTir(biathlete.getId());
-
+					
+					//on réinitialise pour le tir prochain
 					this.supprSimu = false;
 				}
 
@@ -416,6 +480,7 @@ public class Performance implements Runnable {
 		return effort;
 	}
 
+
 	public void setEffort(int effort) {
 		this.effort = effort;
 	}
@@ -423,7 +488,7 @@ public class Performance implements Runnable {
 	public int getPulsation() {
 		return pulsation;
 	}
-	
+
 	public void setPulsation(int pulsation) {
 		this.pulsation = pulsation;
 	}
@@ -632,7 +697,7 @@ public class Performance implements Runnable {
 		return avancer;
 	}
 
-	
+
 	public float getTaux_energie() {
 		return taux_energie;
 	}
@@ -748,7 +813,7 @@ public class Performance implements Runnable {
 			} else {
 				resultat=r1.compareTo(r2);
 			}
-			
+
 			System.out.println();
 			return resultat;
 		}

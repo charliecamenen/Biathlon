@@ -12,21 +12,25 @@ public class Classement {
 	//Liste des membre classé
 	private ArrayList<MembreClassement> list_membre;
 	
+	//reference de la position 
+	private final int ref_pos_x = 20;
+	private final int ref_pos_y = 170;
+	
 	//Intitulé du titre
 	private String titre;
-	private final int y_titre = 180;
-	private final int x_titre = 460;
+	private final int y_titre = ref_pos_y - 5;
+	private final int x_titre = ref_pos_x +30;
 	
 	//Kilometre du pointage
 	private float distance;
-	private final int y_distance = 180;
-	private final int x_distance = 670;
+	private final int y_distance = ref_pos_y -5;
+	private final int x_distance = ref_pos_x + 270;
 	
 	//Encadré du titre du classement
 	private ImageIcon ico_bg_titre;
 	private Image img_bg_titre;
-	private final int y_bg_titre = 161;
-	private final int x_bg_titre = 445;
+	private final int y_bg_titre = ref_pos_y;
+	private final int x_bg_titre = ref_pos_x;
 	
 	//Temps du premier au pointage
 	private long temps_premier;
@@ -88,6 +92,14 @@ public class Classement {
 	}
 
 
+	public int getRef_pos_x() {
+		return ref_pos_x;
+	}
+
+	public int getRef_pos_y() {
+		return ref_pos_y;
+	}
+
 	public float getDistance() {
 		return distance;
 	}
@@ -104,8 +116,6 @@ public class Classement {
 	public void setDistance(float distance) {
 		this.distance = distance;
 	}
-
-
 
 
 	public int getY_titre() {

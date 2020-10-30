@@ -15,8 +15,11 @@ public abstract class Course  {
 	protected ArrayList<String> list_type_tir_cd;
 
 	//Liste des participants
-	protected ArrayList<Performance> list_participants; 
+	protected ArrayList<Performance> list_participants;
 	protected ArrayList<Float> list_km_pointage;
+	
+	//Liste des groupes
+	protected ArrayList<ArrayList<Performance>> liste_groupe;
 
 	//Temps de pause entre deux actualisation
 	protected final int PAUSE = 1000;
@@ -87,7 +90,7 @@ public abstract class Course  {
 				}
 
 				//On créé le membre
-				MembreClassement membre_classement = new MembreClassement(participant.getBiathlete(), participant.getChrono_perf(), participant.getNombre_fautes());
+				MembreClassement membre_classement = new MembreClassement(participant.getBiathlete(), participant.getChrono_perf(), participant.getNombre_fautes(),this.list_classement.get(i).getRef_pos_x(),this.list_classement.get(i).getRef_pos_y());
 
 				//On calcul son retard
 				membre_classement.calculRetard(this.list_classement.get(i).getTemps_premier());
@@ -210,7 +213,7 @@ public abstract class Course  {
 
 	}
 
-
+	//Distance de l'arrivé par rapport au premier
 	public void updateDistancePremier() {
 		for (Performance participant : this.list_participants) {
 			if(this.distance_course < participant.getDistance()) {
@@ -220,14 +223,9 @@ public abstract class Course  {
 
 	}
 
+	//Calcul le x des physique en fonction de leurs avancée dans la course
 	public void updatePositionPhysique(int id_position_cible) {
-		int pos_cible = 0;
-		//trouver la position correspondant a l'identifiant
-		for(int i =0; i< this.list_participants.size(); i++) {
-			if(list_participants.get(i).getBiathlete().getId() == id_position_cible) {
-				pos_cible = i;
-			}
-		}
+		int pos_cible = id_position_cible;
 		//Liste des participant courrant
 		ArrayList<Performance> etat_liste_participante = this.list_participants;
 
@@ -240,12 +238,12 @@ public abstract class Course  {
 				perf.getPhysique().setX_silhouette((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance()))));
 			} else if (perf.getNombre_iter() > etat_liste_participante.get(pos_cible).getNombre_iter()){
 				if(Joueur.id_biathlete == perf.getBiathlete().getId()) {
-					System.out.println((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() + ( perf.getDistance()/perf.getNombre_iter() ) ) )));
+					//System.out.println((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() + ( perf.getDistance()/perf.getNombre_iter() ) ) )));
 				}
 				perf.getPhysique().setX_silhouette((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() + ( perf.getDistance()/perf.getNombre_iter() ) ) )));
 			} else {
 				if(Joueur.id_biathlete == perf.getBiathlete().getId()) {
-					System.out.println((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() - ( perf.getDistance()/perf.getNombre_iter() )      )   )));
+					//System.out.println((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() - ( perf.getDistance()/perf.getNombre_iter() )      )   )));
 				}
 				perf.getPhysique().setX_silhouette((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() - ( perf.getDistance()/perf.getNombre_iter() )      )   )));
 
@@ -253,13 +251,13 @@ public abstract class Course  {
 		}
 	}
 
+	
 	//Renvoie une liste trié des performances courante
-	public ArrayList<Performance> getPerformancesSort() {
+	public void performancesSort() {
 		//On copie la liste des perf
-		ArrayList<Performance> list_sort = list_participants;
+		//ArrayList<Performance> list_sort = list_participants;
 		//On la rie selon le num relayeur(inchangé ici) , et la distance parcouru.
-		Collections.sort(list_sort,Performance.triPhysique);
-		return list_sort;
+		Collections.sort(this.list_participants,Performance.triPhysique);
 	}
 
 	public void terminer(){
@@ -282,6 +280,14 @@ public abstract class Course  {
 		this.y_cible_simulation = y_cible_simulation;
 	}
 
+
+	public ArrayList<ArrayList<Performance>> getListe_groupe() {
+		return liste_groupe;
+	}
+
+	public void setListe_groupe(ArrayList<ArrayList<Performance>> liste_groupe) {
+		this.liste_groupe = liste_groupe;
+	}
 
 	public ArrayList<Performance> getList_participants() {
 		return list_participants;

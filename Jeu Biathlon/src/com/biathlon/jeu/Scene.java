@@ -92,7 +92,8 @@ public class Scene extends JPanel {
 
 	//Position du biathlete a observer sur la frise
 	private int id_vue_biathlete_courrant;
-	
+
+	//Indice du biathlete courrant (id_vue_biathlete_courrant) dans la liste trié
 	private int pos_vue_biathlete_courrant;
 
 	InterfaceJoueur interfaceJoueur;
@@ -249,7 +250,6 @@ public class Scene extends JPanel {
 		//Liste des performances
 		ArrayList<Performance> list_performances_courrant = Joueur.course.getList_participants();
 
-		
 
 		//Parcour des performances pour trouver la position 
 		for(int i = 0; i < list_performances_courrant.size() ; i++) {
@@ -257,14 +257,20 @@ public class Scene extends JPanel {
 			//Si c'est la vue visée
 			if(list_performances_courrant.get(i).getBiathlete().getId() == this.id_vue_biathlete_courrant) {
 
-				//Alors la position dans la liste c'est ca
+				//Alors on actualise la position de son indice dans la liste
 				this.pos_vue_biathlete_courrant = i;
 			}
+
+			//On update le classement
+			list_performances_courrant.get(i).setPos_classement(i+1);;
 		}
 
-		//On met a jour la position e tout le monde par rapport a la selection
-		Joueur.course.updatePositionPhysique(this.id_vue_biathlete_courrant);
 
+		//On met à jour la position de tout le monde par rapport à la selection
+		Joueur.course.updatePositionPhysique(this.pos_vue_biathlete_courrant);
+
+		//-***********WARNING !!!!!!!!***************//
+		//Mettre ca direct dans update physique ?
 		//Si on avance vers l'avant
 		if(list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette() < 500) {
 
@@ -300,25 +306,14 @@ public class Scene extends JPanel {
 
 	}
 
-	//Définir quel biathlete doit etre observé dans la frise
+	//Définir quel biathlete doit etre observé dans la frise (défini lors du scroll
 	public void updateIdentifiantCourrant(int scroll_value) {
 
-		//Liste des performance triées
-		ArrayList<Performance> list_performances_courrant_sort = Joueur.course.getPerformancesSort();
+		//Met a jour l'identifiant du biathlete regardé
+		this.id_vue_biathlete_courrant = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant + scroll_value).getBiathlete().getId();
 
-		//Parcour de la liste
-		for(int i =0; i < list_performances_courrant_sort.size();  i++ ) {
-
-			//Si ca correspond a la vue courante
-			if(list_performances_courrant_sort.get(i).getBiathlete().getId() == this.id_vue_biathlete_courrant) {
-
-				//Alors on actualise l'identifiant courrant a celui d'avant ou d'apres
-				this.id_vue_biathlete_courrant = list_performances_courrant_sort.get(i + scroll_value).getBiathlete().getId();
-				break;
-			}
-		}	
 		//ON update le drapeau du physique courrant
-		interfaceJoueur.setDrapeauPhysique(this.id_vue_biathlete_courrant);
+		this.interfaceJoueur.setDrapeauPhysique(this.id_vue_biathlete_courrant);
 	}
 
 	//Methode qui ajoute un cache si une cible es abatue
@@ -345,16 +340,6 @@ public class Scene extends JPanel {
 		g2.drawImage(img_bg_course,0,0,propTailleImage(ico_bg_course.getIconWidth(),'w'),propTailleImage(ico_bg_course.getIconHeight(),'h'), null);
 	}
 
-	//
-	public void afficherChronoDistance() {
-		//Affiche le chrono de la course
-		g2.drawString(this.msToHMS(Joueur.course.getChrono_course()),50,200);
-
-		//Affiche la distance parcouru du premier
-		g2.drawString(metreToKm(Joueur.course.getDistance_course()),50,150);
-
-	}
-
 	public void afficherInterface() {
 
 		//Affiche le background de l'interface 
@@ -379,7 +364,7 @@ public class Scene extends JPanel {
 				int effort = Joueur.course.getList_participants().get(i).getEffort();
 				String mon_nom = Joueur.course.getList_participants().get(i).getBiathlete().getLibelle();
 				//float forme = Joueur.course.getList_participants().get(i);
-				
+
 				//Affiche le curseur de la jauge 
 				g2.drawImage(interfaceJoueur.getImg_curseur_jauge(), propTailleImage((int)Math.round(interfaceJoueur.getX_curseur_jauge() + ((float)effort * 0.01) * interfaceJoueur.getLongueur_jauge()) , 'w'), propTailleImage(interfaceJoueur.getY_curseur_jauge(), 'h'),propTailleImage(interfaceJoueur.getIco_curseur_jauge().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_curseur_jauge().getIconHeight(),'h'), null);
 				//energie
@@ -409,105 +394,108 @@ public class Scene extends JPanel {
 
 				}
 			}
-			
-			//Affiche les info du physique selectionné
-			if(Joueur.course.getList_participants().get(i).getBiathlete().getId() == this.id_vue_biathlete_courrant) {
 
-				//affiche les infos spécifique au physique selectioné
-				String nom_phy = Joueur.course.getList_participants().get(i).getBiathlete().getLibelle();
-				Biathlete biathlete_phy = Joueur.course.getList_participants().get(i).getBiathlete();
-				
-				AttributedString classement = new AttributedString("8e");
-				classement.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUPER, 1, 2);
-				classement.addAttribute(TextAttribute.SIZE, propTaillePolice(28));
-				g2.drawString(classement.getIterator(),propTailleImage(interfaceJoueur.getX_classement(),'w'),propTailleImage(interfaceJoueur.getY_classement(),'h'));
-				
-				//drapeau physique
-				g2.drawImage(interfaceJoueur.getImg_drapeau_physique(), propTailleImage(interfaceJoueur.getX_drapeau_physique(), 'w'), propTailleImage(interfaceJoueur.getY_drapeau_physique(), 'h'),propTailleImage((int)Math.round(interfaceJoueur.getIco_drapeau_physique().getIconWidth()*1.6),'w'),propTailleImage((int)Math.round(interfaceJoueur.getIco_drapeau_physique().getIconHeight()*1.6),'h'), null);			
-				//Nom de mon biathlete
-				g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(19)));
-				g2.setColor(new Color(255,255,255));
-				g2.drawString(nom_phy,propTailleImage(interfaceJoueur.getX_nom_biathlete(),'w'),propTailleImage(interfaceJoueur.getY_nom_biathlete(),'h'));
 
-				//FAIRE VARIER EN FONCTION DU NOMBRE DE TIRS
-				g2.setColor(new Color(255,255,255));
-				g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(19)));
-				//Affichage des background de resultat au tirs
-				for(int j = 0; j < 8;j++) {
-					if(j < 4) {
-						g2.drawImage(interfaceJoueur.getImg_res_tir(), propTailleImage(interfaceJoueur.getX_res_tir() + j*interfaceJoueur.getX_res_tir_decalage(), 'w'), propTailleImage(interfaceJoueur.getY_res_tir(), 'h'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconHeight(),'h'), null);			
-						g2.drawString("1",propTailleImage(interfaceJoueur.getX_text_faute() + j*interfaceJoueur.getX_text_faute_decalage(),'w'),propTailleImage(interfaceJoueur.getY_text_faute() ,'h'));
-					}else {
-						g2.drawImage(interfaceJoueur.getImg_res_tir(), propTailleImage(interfaceJoueur.getX_res_tir() + (j-4)*interfaceJoueur.getX_res_tir_decalage(), 'w'), propTailleImage(interfaceJoueur.getY_res_tir() + interfaceJoueur.getY_res_tir_decalage(), 'h'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconHeight(),'h'), null);				
-						g2.drawString("-",propTailleImage(interfaceJoueur.getX_text_faute() + (j-4)*interfaceJoueur.getX_text_faute_decalage(),'w'),propTailleImage(interfaceJoueur.getY_text_faute()+ interfaceJoueur.getY_text_faute_decalage() ,'h'));
-					}
+			//affiche les infos spécifique au physique selectioné
+			String nom_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getBiathlete().getLibelle();
+			Biathlete biathlete_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getBiathlete();
+			int cla = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getPos_classement();
+
+			AttributedString classement = new AttributedString(Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getPos_classement()+"e");
+			int exp = 1;
+			if(cla >9) { exp = 2;}
+
+			classement.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUPER, exp, exp+1);
+			classement.addAttribute(TextAttribute.SIZE, propTaillePolice(28));
+			g2.drawString(classement.getIterator(),propTailleImage(interfaceJoueur.getX_classement(),'w'),propTailleImage(interfaceJoueur.getY_classement(),'h'));
+
+			//drapeau physique
+			g2.drawImage(interfaceJoueur.getImg_drapeau_physique(), propTailleImage(interfaceJoueur.getX_drapeau_physique(), 'w'), propTailleImage(interfaceJoueur.getY_drapeau_physique(), 'h'),propTailleImage((int)Math.round(interfaceJoueur.getIco_drapeau_physique().getIconWidth()*1.6),'w'),propTailleImage((int)Math.round(interfaceJoueur.getIco_drapeau_physique().getIconHeight()*1.6),'h'), null);			
+			//Nom de mon biathlete
+			g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(19)));
+			g2.setColor(new Color(255,255,255));
+			g2.drawString(nom_phy,propTailleImage(interfaceJoueur.getX_nom_biathlete(),'w'),propTailleImage(interfaceJoueur.getY_nom_biathlete(),'h'));
+
+			//FAIRE VARIER EN FONCTION DU NOMBRE DE TIRS
+			g2.setColor(new Color(255,255,255));
+			g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(19)));
+			//Affichage des background de resultat au tirs
+			for(int j = 0; j < 8;j++) {
+				if(j < 4) {
+					g2.drawImage(interfaceJoueur.getImg_res_tir(), propTailleImage(interfaceJoueur.getX_res_tir() + j*interfaceJoueur.getX_res_tir_decalage(), 'w'), propTailleImage(interfaceJoueur.getY_res_tir(), 'h'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconHeight(),'h'), null);			
+					g2.drawString("1",propTailleImage(interfaceJoueur.getX_text_faute() + j*interfaceJoueur.getX_text_faute_decalage(),'w'),propTailleImage(interfaceJoueur.getY_text_faute() ,'h'));
+				}else {
+					g2.drawImage(interfaceJoueur.getImg_res_tir(), propTailleImage(interfaceJoueur.getX_res_tir() + (j-4)*interfaceJoueur.getX_res_tir_decalage(), 'w'), propTailleImage(interfaceJoueur.getY_res_tir() + interfaceJoueur.getY_res_tir_decalage(), 'h'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_res_tir().getIconHeight(),'h'), null);				
+					g2.drawString("-",propTailleImage(interfaceJoueur.getX_text_faute() + (j-4)*interfaceJoueur.getX_text_faute_decalage(),'w'),propTailleImage(interfaceJoueur.getY_text_faute()+ interfaceJoueur.getY_text_faute_decalage() ,'h'));
 				}
-				
-				//On affiche les notes du biathlete physique
-				g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(18)));
-				g2.drawString("SKI",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_ski(),'h'));
-				g2.drawString("DEB",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_deb(),'h'));
-				g2.drawString("COU",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_cou(),'h'));
-				g2.drawString("END",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_end(),'h'));
-				g2.drawString("ACC",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_acc(),'h'));
-				g2.setFont(new Font("calibri", Font.PLAIN, propTaillePolice(18)));
-				g2.drawString(""+biathlete_phy.getSki(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_ski(),'h'));
-				g2.drawString(""+biathlete_phy.getDeb(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_deb(),'h'));
-				g2.drawString(""+biathlete_phy.getCou(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_cou(),'h'));
-				g2.drawString(""+biathlete_phy.getEnd(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_end(),'h'));
-				g2.drawString(""+biathlete_phy.getAcc(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_acc(),'h'));
+			}
 
-				//On ffiche les information du classement
-				//Actuel
-				AttributedString pos_class = new AttributedString("12e");
-				pos_class.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUPER, 2, 3);
-				pos_class.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
-				g2.drawString(pos_class.getIterator(),propTailleImage(interfaceJoueur.getX_position_classement(),'w'),propTailleImage(interfaceJoueur.getY_position_classement(),'h'));
-				AttributedString pos_point = new AttributedString("847pts");
-				pos_point.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 3, 6);
-				pos_point.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
-				g2.drawString(pos_point.getIterator(),propTailleImage(interfaceJoueur.getX_point_classement(),'w'),propTailleImage(interfaceJoueur.getY_point_classement(),'h'));
-				
-				//prediction
-				g2.setColor(new Color(50,230,20));
-				AttributedString pos_class_pred = new AttributedString("8e");
-				pos_class_pred.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUPER, 1, 2);
-				pos_class_pred.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
-				g2.drawString(pos_class_pred.getIterator(),propTailleImage(interfaceJoueur.getX_position_predict(),'w'),propTailleImage(interfaceJoueur.getY_position_predict(),'h'));
-				AttributedString pos_point_pred = new AttributedString("1030pts");
-				pos_point_pred.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 4, 7);
-				pos_point_pred.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
-				g2.drawString(pos_point_pred.getIterator(),propTailleImage(interfaceJoueur.getX_point_predict(),'w'),propTailleImage(interfaceJoueur.getY_point_predict(),'h'));
-			
-				float vitesse_phy = Joueur.course.getList_participants().get(i).getVitesse();
-				float dist_arr_phy = Joueur.course.getList_participants().get(i).getList_km_pointage().get(Joueur.course.getList_participants().get(i).getList_km_pointage().size() -1) - Joueur.course.getList_participants().get(i).getDistance();
-				float dist_tir_phy = Joueur.course.getList_participants().get(i).getList_km_tir().get(Joueur.course.getList_participants().get(i).getTir_courrant()) - Joueur.course.getList_participants().get(i).getDistance();
-				float vent_phy = Joueur.course.getList_participants().get(i).getVitesse_vent();
-				float pente_phy = Joueur.course.getList_participants().get(i).getPente();
-				
-				g2.setColor(new Color(255,255,255));
-				g2.setFont(new Font("calibri", Font.PLAIN, propTaillePolice(22)));
-				//vitesse
-				g2.drawString(vitesse_phy+" km/h",propTailleImage(interfaceJoueur.getX_vitesse(),'w'),propTailleImage(interfaceJoueur.getY_vitesse(),'h'));
-				//Distance tir
-				g2.drawString(Math.rint(dist_tir_phy/100)/10 + " km",propTailleImage(interfaceJoueur.getX_distance_tir(),'w'),propTailleImage(interfaceJoueur.getY_distance_tir(),'h'));
-				//distance arrivée
-				g2.drawString(Math.rint(dist_arr_phy/100)/10 + " km",propTailleImage(interfaceJoueur.getX_distance_arrive(),'w'),propTailleImage(interfaceJoueur.getY_distance_arrive(),'h'));
-				//pente
-				g2.drawString(pente_phy+ " %",propTailleImage(interfaceJoueur.getX_pente(),'w'),propTailleImage(interfaceJoueur.getY_pente(),'h'));
-				//vent
-				g2.drawString(vent_phy+" km/h",propTailleImage(interfaceJoueur.getX_vent(),'w'),propTailleImage(interfaceJoueur.getY_vent(),'h'));
-				//vent direction
-				double rotationRequired = Math.toRadians (45);
-				
-				/*AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, interfaceJoueur.getX_vent_direction(), interfaceJoueur.getY_vent_direction());
+			//On affiche les notes du biathlete physique
+			g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(18)));
+			g2.drawString("SKI",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_ski(),'h'));
+			g2.drawString("DEB",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_deb(),'h'));
+			g2.drawString("COU",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_cou(),'h'));
+			g2.drawString("END",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_end(),'h'));
+			g2.drawString("ACC",propTailleImage(interfaceJoueur.getX_note_lib(),'w'),propTailleImage(interfaceJoueur.getY_note_acc(),'h'));
+			g2.setFont(new Font("calibri", Font.PLAIN, propTaillePolice(18)));
+			g2.drawString(""+biathlete_phy.getSki(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_ski(),'h'));
+			g2.drawString(""+biathlete_phy.getDeb(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_deb(),'h'));
+			g2.drawString(""+biathlete_phy.getCou(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_cou(),'h'));
+			g2.drawString(""+biathlete_phy.getEnd(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_end(),'h'));
+			g2.drawString(""+biathlete_phy.getAcc(),propTailleImage(interfaceJoueur.getX_note(),'w'),propTailleImage(interfaceJoueur.getY_note_acc(),'h'));
+
+			//On ffiche les information du classement generale
+			//Actuel
+			AttributedString pos_class = new AttributedString("12e");
+			pos_class.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUPER, 2, 3);
+			pos_class.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
+			g2.drawString(pos_class.getIterator(),propTailleImage(interfaceJoueur.getX_position_classement(),'w'),propTailleImage(interfaceJoueur.getY_position_classement(),'h'));
+			AttributedString pos_point = new AttributedString("847pts");
+			pos_point.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 3, 6);
+			pos_point.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
+			g2.drawString(pos_point.getIterator(),propTailleImage(interfaceJoueur.getX_point_classement(),'w'),propTailleImage(interfaceJoueur.getY_point_classement(),'h'));
+
+			//prediction
+			g2.setColor(new Color(50,230,20));
+			AttributedString pos_class_pred = new AttributedString("8e");
+			pos_class_pred.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUPER, 1, 2);
+			pos_class_pred.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
+			g2.drawString(pos_class_pred.getIterator(),propTailleImage(interfaceJoueur.getX_position_predict(),'w'),propTailleImage(interfaceJoueur.getY_position_predict(),'h'));
+			AttributedString pos_point_pred = new AttributedString("1030pts");
+			pos_point_pred.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 4, 7);
+			pos_point_pred.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
+			g2.drawString(pos_point_pred.getIterator(),propTailleImage(interfaceJoueur.getX_point_predict(),'w'),propTailleImage(interfaceJoueur.getY_point_predict(),'h'));
+
+			float vitesse_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getVitesse();
+			float dist_arr_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_pointage().get(Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_pointage().size() -1) - Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getDistance();
+			float dist_tir_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_tir().get(Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getTir_courrant()) - Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getDistance();
+			float vent_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getVitesse_vent();
+			float pente_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getPente();
+
+			g2.setColor(new Color(255,255,255));
+			g2.setFont(new Font("calibri", Font.PLAIN, propTaillePolice(22)));
+			//vitesse
+			g2.drawString(vitesse_phy+" km/h",propTailleImage(interfaceJoueur.getX_vitesse(),'w'),propTailleImage(interfaceJoueur.getY_vitesse(),'h'));
+			//Distance tir
+			g2.drawString(Math.rint(dist_tir_phy/100)/10 + " km",propTailleImage(interfaceJoueur.getX_distance_tir(),'w'),propTailleImage(interfaceJoueur.getY_distance_tir(),'h'));
+			//distance arrivée
+			g2.drawString(Math.rint(dist_arr_phy/100)/10 + " km",propTailleImage(interfaceJoueur.getX_distance_arrive(),'w'),propTailleImage(interfaceJoueur.getY_distance_arrive(),'h'));
+			//pente
+			g2.drawString(pente_phy+ " %",propTailleImage(interfaceJoueur.getX_pente(),'w'),propTailleImage(interfaceJoueur.getY_pente(),'h'));
+			//vent
+			g2.drawString(vent_phy+" km/h",propTailleImage(interfaceJoueur.getX_vent(),'w'),propTailleImage(interfaceJoueur.getY_vent(),'h'));
+
+			//vent direction
+			double rotationRequired = Math.toRadians (45);
+
+			/*AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, interfaceJoueur.getX_vent_direction(), interfaceJoueur.getY_vent_direction());
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 				AffineTransform rotation = new AffineTransform();
 				rotation = AffineTransform.getRotateInstance(rotationRequired, interfaceJoueur.getX_vent_direction(), interfaceJoueur.getY_vent_direction());
 				g2.drawImage(interfaceJoueur.getImg_vent_direction(), rotation, null);*/
-				g2.drawImage(interfaceJoueur.getImg_vent_direction(), propTailleImage(interfaceJoueur.getX_vent_direction(), 'w'), propTailleImage(Math.round(interfaceJoueur.getY_vent_direction()), 'h'),propTailleImage(interfaceJoueur.getIco_vent_direction().getIconWidth(),'w'),propTailleImage(Math.round(interfaceJoueur.getIco_vent_direction().getIconHeight()),'h'), null);			
+			g2.drawImage(interfaceJoueur.getImg_vent_direction(), propTailleImage(interfaceJoueur.getX_vent_direction(), 'w'), propTailleImage(Math.round(interfaceJoueur.getY_vent_direction()), 'h'),propTailleImage(interfaceJoueur.getIco_vent_direction().getIconWidth(),'w'),propTailleImage(Math.round(interfaceJoueur.getIco_vent_direction().getIconHeight()),'h'), null);			
 
-			}
+
 		}
 
 		//On affiche les text
@@ -520,11 +508,11 @@ public class Scene extends JPanel {
 	//Affiche le classement
 	public void afficherClassement(Classement classement) {
 
-		y_membre = 200;
+		y_membre = classement.getRef_pos_y();
 		//On affiche l'en tete de classement
 
 		//ON affiche le background du titre
-		g2.drawImage(classement.getImg_bg_titre(), propTailleImage(classement.getX_bg_titre(),'w' ), propTailleImage(classement.getY_bg_titre(),'h' ) ,propTailleImage(classement.getIco_bg_titre().getIconWidth(),'w' ),propTailleImage(classement.getIco_bg_titre().getIconHeight(),'h' ), null);
+		//g2.drawImage(classement.getImg_bg_titre(), propTailleImage(classement.getX_bg_titre(),'w' ), propTailleImage(classement.getY_bg_titre(),'h' ) ,propTailleImage(classement.getIco_bg_titre().getIconWidth(),'w' ),propTailleImage(classement.getIco_bg_titre().getIconHeight(),'h' ), null);
 
 		//Affiche le titre
 		g2.setColor(new Color(255,255,255));
@@ -548,7 +536,7 @@ public class Scene extends JPanel {
 			g2.drawImage(membre.getImg_drapeau(), propTailleImage(membre.getX_drapeau(),'w' ),propTailleImage(y_membre+5,'h' ), propTailleImage(membre.getIco_drapeau().getIconWidth(),'w' ),propTailleImage(membre.getIco_drapeau().getIconHeight(),'h' ), null);
 
 			//Affiché le backgroud d'erreur 
-			g2.drawImage(membre.getImg_bg_erreur(), propTailleImage(membre.getX_bg_erreur(),'w' ),propTailleImage(y_membre+3,'h' ), propTailleImage(membre.getIco_bg_erreur().getIconWidth(),'w' ),propTailleImage(membre.getIco_bg_erreur().getIconHeight(),'h' ), null);
+			//g2.drawImage(membre.getImg_bg_erreur(), propTailleImage(membre.getX_bg_erreur(),'w' ),propTailleImage(y_membre+3,'h' ), propTailleImage(membre.getIco_bg_erreur().getIconWidth(),'w' ),propTailleImage(membre.getIco_bg_erreur().getIconHeight(),'h' ), null);
 
 
 			//Nombre de fautes
@@ -566,7 +554,7 @@ public class Scene extends JPanel {
 			g2.drawString(this.msToHMS(membre.getTemps()), propTailleImage(membre.getX_temps(),'w' ),propTailleImage(y_membre + 19,'h' ));
 
 			//On incremente le y
-			y_membre +=30;
+			y_membre +=31;
 		}
 		int size_list;
 		int deb_list;
@@ -596,7 +584,7 @@ public class Scene extends JPanel {
 			g2.drawImage(membre.getImg_drapeau(), propTailleImage(membre.getX_drapeau(),'w' ),propTailleImage(y_membre+5,'h' ), propTailleImage(membre.getIco_drapeau().getIconWidth(),'w' ),propTailleImage(membre.getIco_drapeau().getIconHeight(),'h' ), null);
 
 			//Affiché le backgroud d'erreur 
-			g2.drawImage(membre.getImg_bg_erreur(), propTailleImage(membre.getX_bg_erreur(),'w' ),propTailleImage(y_membre+3,'h' ), propTailleImage(membre.getIco_bg_erreur().getIconWidth(),'w' ),propTailleImage(membre.getIco_bg_erreur().getIconHeight(),'h' ), null);
+			//g2.drawImage(membre.getImg_bg_erreur(), propTailleImage(membre.getX_bg_erreur(),'w' ),propTailleImage(y_membre+3,'h' ), propTailleImage(membre.getIco_bg_erreur().getIconWidth(),'w' ),propTailleImage(membre.getIco_bg_erreur().getIconHeight(),'h' ), null);
 
 			//Nombre de fautes
 			g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(15)));
@@ -614,7 +602,7 @@ public class Scene extends JPanel {
 			g2.drawString("+ " + this.msToHMS(membre.getRetard()), propTailleImage(membre.getX_retard(),'w' ),propTailleImage(y_membre+19,'h' ));
 
 			//On incrémente le y
-			y_membre +=30;
+			y_membre +=31;
 		}
 
 	}
@@ -742,6 +730,9 @@ public class Scene extends JPanel {
 		//On actualise la position du fond
 		this.deplacementFond();
 
+		//Tri la liste des participants
+		Joueur.course.performancesSort();
+
 		//PROVISOIR ***************************
 		ico_bg_frise = new ImageIcon(getClass().getResource("/images/bgFrise.png"));
 		this.img_bg_frise = this.ico_bg_frise.getImage();
@@ -761,14 +752,12 @@ public class Scene extends JPanel {
 		g2.drawImage(this.img_lunette,this.x_lunette,this.y_lunette,null);
 
 		if (Joueur.course != null) {
-			//Affichage du chrono et du temps
-			this.afficherChronoDistance();
 
 			//Affichage des cibles de simulations
 			this.afficherSimulationTir(Joueur.course.getList_simulation_tir());
 
 			//Afficher le classement selectionné 
-			//this.afficherClassement(Joueur.course.getList_classement().get(this.indice_classement));
+			this.afficherClassement(Joueur.course.getList_classement().get(this.indice_classement));
 		}
 
 	}

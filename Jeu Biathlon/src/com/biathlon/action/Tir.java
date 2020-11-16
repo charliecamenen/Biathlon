@@ -5,6 +5,7 @@ import java.nio.CharBuffer;
 import java.util.Random;
 
 import com.biathlon.jeu.Joueur;
+import com.biathlon.jeu.Main;
 
 public class Tir implements Runnable{
 
@@ -73,7 +74,7 @@ public class Tir implements Runnable{
 	@Override
 	public void run() {
 		//On ajoute le biathlete a la simulation
-		Joueur.course.ajouterSimulationTir(id_biathlete);
+		Main.joueur.getCourse().ajouterSimulationTir(id_biathlete);
 		
 		while(compteurTir < tir_a_realiser & nb_reussi < 5) {
 			//ON attend le temps entre deux tirs
@@ -89,16 +90,16 @@ public class Tir implements Runnable{
 			//si il reussi
 			if (proba < proba_reussite) {
 				//alors on envoie le resultat True
-				Joueur.course.ajouterResultatTir(id_biathlete, true);
+				Main.joueur.getCourse().ajouterResultatTir(id_biathlete, true);
 				this.nb_reussi +=1;
 			} else {
 				//sinon on envoie le resultat false
-				Joueur.course.ajouterResultatTir(id_biathlete, false );
+				Main.joueur.getCourse().ajouterResultatTir(id_biathlete, false );
 
 			}
 			
 			if(compteurTir >4) {
-				Joueur.course.retirerBallePioche(id_biathlete);
+				Main.joueur.getCourse().retirerBallePioche(id_biathlete);
 			}
 			//sinon on avance
 			compteurTir +=1;
@@ -106,13 +107,13 @@ public class Tir implements Runnable{
 			//Si on est en relai et qu'on arrive au 6 eme tir
 			if(compteurTir == 5 & tir_a_realiser == 8 & this.nb_reussi<5) {
 				//Alors on ajoute les balles de pioches
-				Joueur.course.ajouterBalleDePioche(id_biathlete);
+				Main.joueur.getCourse().ajouterBalleDePioche(id_biathlete);
 			}
 			
 			try {
 				Thread.sleep((int) 500/vitesse_jeu);
 			} catch (InterruptedException e) {e.printStackTrace();}
-			Joueur.course.blanchirCible(id_biathlete);
+			Main.joueur.getCourse().blanchirCible(id_biathlete);
 			
 		}
 	}

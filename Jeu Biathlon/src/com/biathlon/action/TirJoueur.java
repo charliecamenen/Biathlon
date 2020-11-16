@@ -25,7 +25,7 @@ public class TirJoueur extends Tir implements MouseListener, MouseMotionListener
 		Joueur.cible_joueur.updateCibleBlanchisToFalse();
 
 		//ON ajoute la simulation de tir 
-		Joueur.course.ajouterSimulationTir(this.id_biathlete);
+		Main.joueur.getCourse().ajouterSimulationTir(this.id_biathlete);
 
 		//On affiche la cible du joueuer
 		Main.scene.setTir_joueur(true);
@@ -76,7 +76,7 @@ public class TirJoueur extends Tir implements MouseListener, MouseMotionListener
 								Joueur.cible_joueur.setCompteurBlanchirCible(4);
 
 								//On reblanchi la cible de simulation
-								Joueur.course.blanchirCible(this.id_biathlete);
+								Main.joueur.getCourse().blanchirCible(this.id_biathlete);
 							}
 						}else {
 
@@ -98,7 +98,7 @@ public class TirJoueur extends Tir implements MouseListener, MouseMotionListener
 								Joueur.cible_joueur.setCompteurBlanchirCible(4);
 
 								//On reblanchi la cible de simulation
-								Joueur.course.blanchirCible(this.id_biathlete);
+								Main.joueur.getCourse().blanchirCible(this.id_biathlete);
 							}
 						}
 

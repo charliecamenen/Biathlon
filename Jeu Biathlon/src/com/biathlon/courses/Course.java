@@ -226,7 +226,7 @@ public abstract class Course  {
 	//Calcul le x des physique en fonction de leurs avancée dans la course
 	public void updatePositionPhysique(int id_position_cible) {
 		int pos_cible = id_position_cible;
-		//Liste des participant courrant
+		//Liste des participant courrant (faire en sorte de pas copier les adresses
 		ArrayList<Performance> etat_liste_participante = this.list_participants;
 
 		//Calcul de la position pour tout le monde
@@ -236,15 +236,13 @@ public abstract class Course  {
 			if(perf.getNombre_iter() == etat_liste_participante.get(pos_cible).getNombre_iter()) {
 				//alors on affiche normal
 				perf.getPhysique().setX_silhouette((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance()))));
+			
 			} else if (perf.getNombre_iter() > etat_liste_participante.get(pos_cible).getNombre_iter()){
-				if(Joueur.id_biathlete == perf.getBiathlete().getId()) {
-					//System.out.println((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() + ( perf.getDistance()/perf.getNombre_iter() ) ) )));
-				}
+				
 				perf.getPhysique().setX_silhouette((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() + ( perf.getDistance()/perf.getNombre_iter() ) ) )));
+			
 			} else {
-				if(Joueur.id_biathlete == perf.getBiathlete().getId()) {
-					//System.out.println((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() - ( perf.getDistance()/perf.getNombre_iter() )      )   )));
-				}
+				
 				perf.getPhysique().setX_silhouette((int) Math.round((etat_liste_participante.get(pos_cible).getPhysique().getX_silhouette() + 50 * (etat_liste_participante.get(pos_cible).getDistance() - perf.getDistance() - ( perf.getDistance()/perf.getNombre_iter() )      )   )));
 
 			}

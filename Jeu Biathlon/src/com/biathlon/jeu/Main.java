@@ -2,6 +2,7 @@ package com.biathlon.jeu;
 
 import java.awt.Button;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -16,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.biathlon.action.Biathlete;
+import com.biathlon.action.Gestion;
 import com.biathlon.action.Performance;
 import com.biathlon.action.Saison;
 import com.biathlon.courses.Course;
@@ -28,22 +30,19 @@ public class Main {
 
 	//création de la scene (visible de partout parce qu'elle est static)
 	public static Scene scene;
+	public static Accueil acceuil;
+	public static Gestion gestion;
 	public static Joueur joueur;
 	public static SqlBase database;
 	public static UserAction useraction;
 	public static Saison saison;
 	public static Course course_simple;
 	public static Performance performance;
-	static JFrame acceuil;
 	public static JFrame fenetre;
-	static JFrame menu_course;
-	static JFrame menu_participant;
 
 	public static Chrono chrono;
 
 	public static void main(String[] args) {
-		
-	
 
 		fenetre = new JFrame("Jeu Biathlon");
 		//Ferme la fenetre si on clique sur la croix
@@ -58,37 +57,23 @@ public class Main {
 		}else {
 			fenetre.setSize((int) dimension.getWidth(), (int)Math.round(dimension.getWidth()/1.78));
 		}
-		
-		
 
 		fenetre.setLocationRelativeTo(null);
 		//Peut on modifier les dimensions?
 		fenetre.setResizable(true);
-		
+
 		//Doit elles etre en premier plan tout le temps ?
 		fenetre.setAlwaysOnTop(true);
 
+		//Acceuil du jeu (au lencement)
+		acceuil = new Accueil();
 
-		// Création de la fenetre d'acceuil
-		acceuil = new JFrame("Jeu Biathlon");
-		//Ferme la fenetre si on clique sur la croix
-		acceuil.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		acceuil.setSize(400,250);
-		acceuil.setLocationRelativeTo(null);
-		//Peut on modifier les dimensions?
-		acceuil.setResizable(false);
-		//Doit elles etre en premier plan tout le temps ?
-		acceuil.setAlwaysOnTop(true);
-
-		Accueil menu_choix = new Accueil();
-
-		acceuil.setContentPane(menu_choix);
-		acceuil.setVisible(true);
+		//le choix du menu est affiché
+		fenetre.setContentPane(acceuil);
+		fenetre.setVisible(true);
 
 		//-------------------------------------------------------------------------//
 		/*
-
-
 
 		saison = new Saison();
 		saison.prochaineCourse();
@@ -109,42 +94,20 @@ public class Main {
 		switch(choix){
 		case 1://On lance une course simple
 
-
-			//ON créé l'objet joueur
+			//On créé l'objet joueur
 			joueur = new Joueur("course");
-
-			//-----------------------------------------//
-			// Création de la fenetre choix de la course
-			menu_course = new JFrame("Jeu Biathlon");
-			//Ferme la fenetre si on clique sur la croix
-			menu_course.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			menu_course.setSize(500,600);
-			menu_course.setLocationRelativeTo(null);
-			//Peut on modifier les dimensions?
-			menu_course.setResizable(false);
-			//Doit elles etre en premier plan tout le temps ?
-			menu_course.setAlwaysOnTop(true);
-			//-----------------------------------------//
 
 			//Ouvre la fenetre choix course
 			ChoixCourse choix_course = new ChoixCourse();
-			menu_course.setContentPane(choix_course);
-			//Supprime la fenetre acceuil
-			acceuil.dispose();
-			menu_course.setVisible(true);
+			fenetre.setContentPane(choix_course);
+			fenetre.setVisible(true);
 			break;
 
-
-
-
-
-
-
-			//chrono = new Chrono();
-			// 1h 12:33.6
-			//4353600
 		case 2://On lance une carriere
 
+			gestion = new Gestion();
+			fenetre.setContentPane(gestion);
+			fenetre.setVisible(true);
 			//LocalDateTime test = LocalDateTime.now();
 			//System.out.println(test.getHour() + 5);
 			//On créée l'objet joueur
@@ -160,25 +123,12 @@ public class Main {
 
 	public static void choixParticipantFenetre(String ind_mult, String sexe) {
 
-		//-----------------------------------------//
-		// Création de la choix des membres de l'equipe
-		menu_participant = new JFrame("Jeu Biathlon");
-		//Ferme la fenetre si on clique sur la croix
-		menu_participant.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		menu_participant.setSize(400,600);
-		menu_participant.setLocationRelativeTo(null);
-		//Peut on modifier les dimensions?
-		menu_participant.setResizable(false);
-		//Doit elles etre en premier plan tout le temps ?
-		menu_participant.setAlwaysOnTop(true);
-		//-----------------------------------------//
-		menu_course.dispose();
-
+		//Change le sexe du joueur
 		joueur.setSexe(sexe);
 
 		ResultSet resultat;
 		ArrayList<String> list_equipe = new ArrayList<>();
-		ChoixParticipant choix_participant;
+		Container choix_participant;
 
 		switch(ind_mult) {
 		case "m": //RELAIS
@@ -201,11 +151,6 @@ public class Main {
 				//Ouvre la fenetre choix d'equipe 
 				choix_participant = new ChoixParticipant(list_equipe, "H");
 
-				//On ajoute a la fenetre
-				menu_participant.setContentPane(choix_participant);
-
-				//Supprime la fenetre acceuil
-				menu_participant.setVisible(true);
 				break;
 
 			case "Femme":
@@ -213,11 +158,6 @@ public class Main {
 				//Ouvre la fenetre choix d'equipe 
 				choix_participant = new ChoixParticipant(list_equipe, "F");
 
-				//On ajoute a la fenetre
-				menu_participant.setContentPane(choix_participant);
-
-				//Supprime la fenetre acceuil
-				menu_participant.setVisible(true);
 				break;
 
 			case "Mixte":
@@ -225,14 +165,10 @@ public class Main {
 				//Ouvre la fenetre choix d'equipe 
 				choix_participant = new ChoixParticipant(list_equipe, "M");
 
+			default:
 				//On ajoute a la fenetre
-				menu_participant.setContentPane(choix_participant);
-
-				//Supprime la fenetre acceuil
-				menu_participant.setVisible(true);
-
+				choix_participant = new ChoixParticipant("H");
 			}
-
 
 
 			break;
@@ -244,11 +180,6 @@ public class Main {
 				//Ouvre la fenetre choix d'equipe 
 				choix_participant = new ChoixParticipant("H");
 
-				//On ajoute a la fenetre
-				menu_participant.setContentPane(choix_participant);
-
-				//Supprime la fenetre acceuil
-				menu_participant.setVisible(true);
 				break;
 
 			case "Femme":
@@ -256,25 +187,30 @@ public class Main {
 				//Ouvre la fenetre choix d'equipe 
 				choix_participant = new ChoixParticipant("F");
 
-				//On ajoute a la fenetre
-				menu_participant.setContentPane(choix_participant);
-
-				//Supprime la fenetre acceuil
-				menu_participant.setVisible(true);
 				break;
-
+			default:
+				//On ajoute a la fenetre
+				choix_participant = new ChoixParticipant("H");
+				
 			}
 			break;
-
+			
+		default:
+			//On ajoute a la fenetre
+			choix_participant = new ChoixParticipant("H");
 
 		}
 
+		//On ajoute a la fenetre
+		fenetre.setContentPane(choix_participant);
+		fenetre.setVisible(true);
 	}
 
 	public static void lancerJeu() {
 		//Instanciation de la scene
+
+		fenetre.dispose();
 		scene = new Scene();
-		menu_participant.dispose();
 		fenetre.setContentPane(scene);
 		fenetre.setVisible(true);
 	}

@@ -1,5 +1,4 @@
 package com.biathlon.jeu;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -20,27 +19,27 @@ public class Souris implements MouseListener, MouseMotionListener, MouseWheelLis
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		
 		int scroll = e.getWheelRotation();
 		if (e.getY() >580) {
 			Main.scene.updateIdentifiantCourrant(scroll);
 		}else {
-			if(Joueur.course.getList_classement().get(Main.scene.getIndice_classement()).getList_membre().size() >= Main.scene.getDernier_affiche_classement() + scroll & Main.scene.getDernier_affiche_classement() + scroll >= 10 ) {
+			if(Main.joueur.getCourse().getList_classement().get(Main.scene.getIndice_classement()).getList_membre().size() >= Main.scene.getDernier_affiche_classement() + scroll & Main.scene.getDernier_affiche_classement() + scroll >= 10 ) {
 				Main.scene.setDernier_affiche_classement(Main.scene.getDernier_affiche_classement() + scroll);
 			}
 		}
 		if(e.getY() > 508 & e.getY() < 530 & e.getX() > 649 & e.getX() < 849 ) {
-			for(int i =0;i<Joueur.course.getList_participants().size();i++) {
+			for(int i =0;i<Main.joueur.getCourse().getList_participants().size();i++) {
 				//affiche les infos spécifique a mon biathlete
-				if(Joueur.course.getList_participants().get(i).getBiathlete().getId() == Joueur.getId_biathlete()) {
+				if(Main.joueur.getCourse().getList_participants().get(i).getBiathlete().getId() == Main.joueur.getId_biathlete()) {
 					//On actualise l'effort de notre biathlete
-					Performance mon_biathlete = Joueur.course.getList_participants().get(i);
+					Performance mon_biathlete = Main.joueur.getCourse().getList_participants().get(i);
 					if(mon_biathlete.getEffort() - scroll < 100 & mon_biathlete.getEffort() - scroll >= 0)
 					mon_biathlete.setEffort(mon_biathlete.getEffort() - scroll);
 				}
 			}
 			
 		}
-		
 
 	}
 
@@ -84,7 +83,7 @@ public class Souris implements MouseListener, MouseMotionListener, MouseWheelLis
 		switch(e.getKeyCode()) {
 		case 39: //Fleche de droite
 			//Si on est pas au maximum de la liste
-			if(Main.scene.getIndice_classement()+1 < Joueur.course.getList_classement().size()) {
+			if(Main.scene.getIndice_classement()+1 < Main.joueur.getCourse().getList_classement().size()) {
 				Main.scene.setIndice_classement(Main.scene.getIndice_classement()+1);
 				Main.scene.setDernier_affiche_classement(10);
 			}
@@ -97,17 +96,17 @@ public class Souris implements MouseListener, MouseMotionListener, MouseWheelLis
 			}
 			break;
 		case 107: // +
-			if(Joueur.course.getVitesse_jeu() < 16) {
-				Joueur.course.modifierVitesseJeu(Joueur.course.getVitesse_jeu() *2);
+			if(Main.joueur.getCourse().getVitesse_jeu() < 16) {
+				Main.joueur.getCourse().modifierVitesseJeu(Main.joueur.getCourse().getVitesse_jeu() *2);
 			}
 			break;
 		case 109: // -
-			if(Joueur.course.getVitesse_jeu() > 1) {
-				Joueur.course.modifierVitesseJeu(Joueur.course.getVitesse_jeu() /2);
+			if(Main.joueur.getCourse().getVitesse_jeu() > 1) {
+				Main.joueur.getCourse().modifierVitesseJeu(Main.joueur.getCourse().getVitesse_jeu() /2);
 			}
 			break;
 		}
-		System.out.println(Joueur.course.getVitesse_jeu());
+		System.out.println(Main.joueur.getCourse().getVitesse_jeu());
 		System.out.println(Main.scene.getIndice_classement());
 
 	}

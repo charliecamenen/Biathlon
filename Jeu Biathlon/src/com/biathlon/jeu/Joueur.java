@@ -18,7 +18,7 @@ import com.biathlon.courses.Relais;
 public class Joueur {
 	
 	//La course auquel le joueur paricipe
-	public static Course course;
+	private Course course;
 	
 	//La cible sur laquelle le joueur va tirer
 	public static CibleJoueur cible_joueur;
@@ -711,12 +711,12 @@ public class Joueur {
 		
 	}
 	
-	public static Course getCourse() {
+	public Course getCourse() {
 		return course;
 	}
 
-	public static void setCourse(Course course) {
-		Joueur.course = course;
+	public void setCourse(Course course) {
+		this.course = course;
 	}
 
 	public static CibleJoueur getCible_joueur() {

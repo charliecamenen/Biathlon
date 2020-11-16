@@ -95,7 +95,11 @@ public class Scene extends JPanel {
 
 	//Indice du biathlete courrant (id_vue_biathlete_courrant) dans la liste trié
 	private int pos_vue_biathlete_courrant;
+	
+	//Distance réel entre deux biathlete au moment du scroll
+	private int distance_entre_deux = 0;
 
+	//Interface graphique pour controler le biathlete
 	InterfaceJoueur interfaceJoueur;
 
 	/***** CONSTRUCTEUR *****/
@@ -132,11 +136,12 @@ public class Scene extends JPanel {
 		this.setFocusable(true);
 		this.requestFocusInWindow();
 
+		Souris s = new Souris();
 		//On ajoute un evennement de souris geré par la classe souris
-		this.addMouseMotionListener(new Souris());
-		this.addMouseListener(new Souris());
-		this.addMouseWheelListener(new Souris());
-		this.addKeyListener(new Souris());
+		this.addMouseMotionListener(s);
+		this.addMouseListener(s);
+		this.addMouseWheelListener(s);
+		this.addKeyListener(s);
 
 		//Chrono qui permet d'actualiser l'écran
 		Thread chrono_ecran = new Thread(new Temps());
@@ -230,8 +235,8 @@ public class Scene extends JPanel {
 	}
 
 	public void deplacementFond() {
-		this.x_bg_frise1 += 3;
-		this.x_bg_frise2 += 3; 
+		this.x_bg_frise1 += 4;
+		this.x_bg_frise2 += 4; 
 
 		if(this.x_bg_frise1 >= 1555 ) {
 			this.x_bg_frise1 = -1550;
@@ -248,7 +253,7 @@ public class Scene extends JPanel {
 	public void navigationPhysique() {
 
 		//Liste des performances
-		ArrayList<Performance> list_performances_courrant = Joueur.course.getList_participants();
+		ArrayList<Performance> list_performances_courrant = Main.joueur.getCourse().getList_participants();
 
 
 		//Parcour des performances pour trouver la position 
@@ -267,16 +272,25 @@ public class Scene extends JPanel {
 
 
 		//On met à jour la position de tout le monde par rapport à la selection
-		Joueur.course.updatePositionPhysique(this.pos_vue_biathlete_courrant);
+		Main.joueur.getCourse().updatePositionPhysique(this.pos_vue_biathlete_courrant);
 
 		//-***********WARNING !!!!!!!!***************//
 		//Mettre ca direct dans update physique ?
+		int dist_cible_but;
+		int decalage;
 		//Si on avance vers l'avant
 		if(list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette() < 500) {
 
+			dist_cible_but = 500-list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette();
 			//Nombre de pixel a decaler
-			int decalage = Math.min(20, 500-list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette());
 
+			if (distance_entre_deux >50) {
+				//Nombre de pixel a decaler
+				decalage = Math.min(distance_entre_deux/5, dist_cible_but);
+			} else {
+				//Nombre de pixel a decaler
+				decalage = Math.min(20, dist_cible_but);
+			}
 			//Décalage de la frise
 			this.x_bg_frise1 += 20;
 			this.x_bg_frise2 += 20;
@@ -289,8 +303,15 @@ public class Scene extends JPanel {
 			}
 
 		}else if(list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette() > 500) {//déplacement arriere
-			//Nombre de pixel a decaler
-			int decalage = Math.min(20, list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette()-500);
+			dist_cible_but = list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette()-500;
+			if (distance_entre_deux >50) {
+				//Nombre de pixel a decaler
+				decalage = Math.min(distance_entre_deux/5, dist_cible_but);
+			} else {
+				//Nombre de pixel a decaler
+				decalage = Math.min(20, dist_cible_but);
+			}
+			
 
 			this.x_bg_frise1 -= 20;
 			this.x_bg_frise2 -= 20; 
@@ -308,10 +329,14 @@ public class Scene extends JPanel {
 
 	//Définir quel biathlete doit etre observé dans la frise (défini lors du scroll
 	public void updateIdentifiantCourrant(int scroll_value) {
-
+		
+		//Calcul du x entre les deux consécutif lors du scroll
+		//Le courrant - le prochain
+		this.distance_entre_deux =  Math.abs((int)Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette() -  Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant + scroll_value).getPhysique().getX_silhouette());
+		
 		//Met a jour l'identifiant du biathlete regardé
-		this.id_vue_biathlete_courrant = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant + scroll_value).getBiathlete().getId();
-
+		this.id_vue_biathlete_courrant = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant + scroll_value).getBiathlete().getId();
+		
 		//ON update le drapeau du physique courrant
 		this.interfaceJoueur.setDrapeauPhysique(this.id_vue_biathlete_courrant);
 	}
@@ -320,7 +345,7 @@ public class Scene extends JPanel {
 	public void ajouterCacheCibleJoueur(int indice, boolean bool) {
 
 		//On ajoute le resultat a la s+imulation
-		Joueur.course.ajouterResultatTir(Joueur.id_biathlete, bool );
+		Main.joueur.getCourse().ajouterResultatTir(Joueur.id_biathlete, bool );
 
 		//On ajoute le resultat a la cible de joueur
 		Joueur.cible_joueur.ajouterResultatTir(bool, indice);
@@ -354,16 +379,16 @@ public class Scene extends JPanel {
 
 		//Affichage des boutons
 		//g2.drawImage(interfaceJoueur.getImg_jauge_energie_vide(), propTailleImage(interfaceJoueur.getX_jauge_energie(), 'w'), propTailleImage(interfaceJoueur.getY_jauge_energie(), 'h'),propTailleImage(interfaceJoueur.getIco_jauge_energie_vide().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_jauge_energie_vide().getIconHeight(),'h'), null);
-		for(int i =0;i<Joueur.course.getList_participants().size();i++) {
+		for(int i =0;i<Main.joueur.getCourse().getList_participants().size();i++) {
 			//affiche les infos spécifique a mon biathlete
-			if(Joueur.course.getList_participants().get(i).getBiathlete().getId() == Joueur.getId_biathlete()) {
-				float taux_en_max = Joueur.course.getList_participants().get(i).getTaux_energie_max();
-				float taux_en = Joueur.course.getList_participants().get(i).getTaux_energie();
-				float taux_acc = Joueur.course.getList_participants().get(i).getTaux_acceleration();
-				int pulsation = Joueur.course.getList_participants().get(i).getPulsation();
-				int effort = Joueur.course.getList_participants().get(i).getEffort();
-				String mon_nom = Joueur.course.getList_participants().get(i).getBiathlete().getLibelle();
-				//float forme = Joueur.course.getList_participants().get(i);
+			if(Main.joueur.getCourse().getList_participants().get(i).getBiathlete().getId() == Joueur.getId_biathlete()) {
+				float taux_en_max = Main.joueur.getCourse().getList_participants().get(i).getTaux_energie_max();
+				float taux_en = Main.joueur.getCourse().getList_participants().get(i).getTaux_energie();
+				float taux_acc = Main.joueur.getCourse().getList_participants().get(i).getTaux_acceleration();
+				int pulsation = Main.joueur.getCourse().getList_participants().get(i).getPulsation();
+				int effort = Main.joueur.getCourse().getList_participants().get(i).getEffort();
+				String mon_nom = Main.joueur.getCourse().getList_participants().get(i).getBiathlete().getLibelle();
+				//float forme = Main.joueur.getCourse().getList_participants().get(i);
 
 				//Affiche le curseur de la jauge 
 				g2.drawImage(interfaceJoueur.getImg_curseur_jauge(), propTailleImage((int)Math.round(interfaceJoueur.getX_curseur_jauge() + ((float)effort * 0.01) * interfaceJoueur.getLongueur_jauge()) , 'w'), propTailleImage(interfaceJoueur.getY_curseur_jauge(), 'h'),propTailleImage(interfaceJoueur.getIco_curseur_jauge().getIconWidth(),'w'),propTailleImage(interfaceJoueur.getIco_curseur_jauge().getIconHeight(),'h'), null);
@@ -397,11 +422,11 @@ public class Scene extends JPanel {
 
 
 			//affiche les infos spécifique au physique selectioné
-			String nom_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getBiathlete().getLibelle();
-			Biathlete biathlete_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getBiathlete();
-			int cla = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getPos_classement();
+			String nom_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getBiathlete().getLibelle();
+			Biathlete biathlete_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getBiathlete();
+			int cla = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getPos_classement();
 
-			AttributedString classement = new AttributedString(Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getPos_classement()+"e");
+			AttributedString classement = new AttributedString(Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getPos_classement()+"e");
 			int exp = 1;
 			if(cla >9) { exp = 2;}
 
@@ -466,11 +491,11 @@ public class Scene extends JPanel {
 			pos_point_pred.addAttribute(TextAttribute.SIZE, propTaillePolice(17));
 			g2.drawString(pos_point_pred.getIterator(),propTailleImage(interfaceJoueur.getX_point_predict(),'w'),propTailleImage(interfaceJoueur.getY_point_predict(),'h'));
 
-			float vitesse_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getVitesse();
-			float dist_arr_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_pointage().get(Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_pointage().size() -1) - Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getDistance();
-			float dist_tir_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_tir().get(Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getTir_courrant()) - Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getDistance();
-			float vent_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getVitesse_vent();
-			float pente_phy = Joueur.course.getList_participants().get(this.pos_vue_biathlete_courrant).getPente();
+			float vitesse_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getVitesse();
+			float dist_arr_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_pointage().get(Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_pointage().size() -1) - Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getDistance();
+			float dist_tir_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getList_km_tir().get(Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getTir_courrant()) - Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getDistance();
+			float vent_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getVitesse_vent();
+			float pente_phy = Main.joueur.getCourse().getList_participants().get(this.pos_vue_biathlete_courrant).getPente();
 
 			g2.setColor(new Color(255,255,255));
 			g2.setFont(new Font("calibri", Font.PLAIN, propTaillePolice(22)));
@@ -501,7 +526,7 @@ public class Scene extends JPanel {
 		//On affiche les text
 		g2.setColor(new Color(255,255,255));
 		g2.setFont(new Font("calibri", Font.BOLD, propTaillePolice(19)));
-		g2.drawString(this.msToHMS(Joueur.course.getChrono_course()),propTailleImage(interfaceJoueur.getX_chrono(),'w'),propTailleImage(interfaceJoueur.getY_chrono(),'h'));
+		g2.drawString(this.msToHMS(Main.joueur.getCourse().getChrono_course()),propTailleImage(interfaceJoueur.getX_chrono(),'w'),propTailleImage(interfaceJoueur.getY_chrono(),'h'));
 
 	}
 
@@ -687,7 +712,7 @@ public class Scene extends JPanel {
 	//Affichage des physique de tout les biathletes
 	public void afficherPhysique() {
 		//On parcour la liste des performances
-		ArrayList<Performance> list_performances_courrant_sort = Joueur.course.getList_participants();
+		ArrayList<Performance> list_performances_courrant_sort = Main.joueur.getCourse().getList_participants();
 		for( Performance perf : list_performances_courrant_sort) {
 			//On affiche (simple basique)
 			g2.drawImage(perf.getPhysique().getImg_silhouette_courant(),propTailleImage(perf.getPhysique().getX_silhouette(), 'w'),propTailleImage(perf.getPhysique().getY_silhouette(), 'h'),propTailleImage(perf.getPhysique().getIco_silhouette().getIconWidth(), 'w'),propTailleImage(perf.getPhysique().getIco_silhouette().getIconHeight(), 'h'),null);
@@ -731,7 +756,7 @@ public class Scene extends JPanel {
 		this.deplacementFond();
 
 		//Tri la liste des participants
-		Joueur.course.performancesSort();
+		Main.joueur.getCourse().performancesSort();
 
 		//PROVISOIR ***************************
 		ico_bg_frise = new ImageIcon(getClass().getResource("/images/bgFrise.png"));
@@ -751,13 +776,13 @@ public class Scene extends JPanel {
 		//Lunette de tir		
 		g2.drawImage(this.img_lunette,this.x_lunette,this.y_lunette,null);
 
-		if (Joueur.course != null) {
+		if (Main.joueur.getCourse() != null) {
 
 			//Affichage des cibles de simulations
-			this.afficherSimulationTir(Joueur.course.getList_simulation_tir());
+			this.afficherSimulationTir(Main.joueur.getCourse().getList_simulation_tir());
 
 			//Afficher le classement selectionné 
-			this.afficherClassement(Joueur.course.getList_classement().get(this.indice_classement));
+			this.afficherClassement(Main.joueur.getCourse().getList_classement().get(this.indice_classement));
 		}
 
 	}
@@ -832,6 +857,126 @@ public class Scene extends JPanel {
 	}
 
 
+
+	public ImageIcon getIco_circuit() {
+		return ico_circuit;
+	}
+
+	public void setIco_circuit(ImageIcon ico_circuit) {
+		this.ico_circuit = ico_circuit;
+	}
+
+	public Image getImg_circuit() {
+		return img_circuit;
+	}
+
+	public void setImg_circuit(Image img_circuit) {
+		this.img_circuit = img_circuit;
+	}
+
+	public ImageIcon getIco_lunette() {
+		return ico_lunette;
+	}
+
+	public void setIco_lunette(ImageIcon ico_lunette) {
+		this.ico_lunette = ico_lunette;
+	}
+
+	public Image getImg_lunette() {
+		return img_lunette;
+	}
+
+	public void setImg_lunette(Image img_lunette) {
+		this.img_lunette = img_lunette;
+	}
+
+	public ImageIcon getIco_bg_frise() {
+		return ico_bg_frise;
+	}
+
+	public void setIco_bg_frise(ImageIcon ico_bg_frise) {
+		this.ico_bg_frise = ico_bg_frise;
+	}
+
+	public Image getImg_bg_frise() {
+		return img_bg_frise;
+	}
+
+	public void setImg_bg_frise(Image img_bg_frise) {
+		this.img_bg_frise = img_bg_frise;
+	}
+
+	public ImageIcon getIco_bg_frise_continue() {
+		return ico_bg_frise_continue;
+	}
+
+	public void setIco_bg_frise_continue(ImageIcon ico_bg_frise_continue) {
+		this.ico_bg_frise_continue = ico_bg_frise_continue;
+	}
+
+	public Image getImg_bg_frise_continue() {
+		return img_bg_frise_continue;
+	}
+
+	public void setImg_bg_frise_continue(Image img_bg_frise_continue) {
+		this.img_bg_frise_continue = img_bg_frise_continue;
+	}
+
+	public int getX_bg_frise_continue() {
+		return x_bg_frise_continue;
+	}
+
+	public void setX_bg_frise_continue(int x_bg_frise_continue) {
+		this.x_bg_frise_continue = x_bg_frise_continue;
+	}
+
+	public int getY_bg_frise_continue() {
+		return y_bg_frise_continue;
+	}
+
+	public void setY_bg_frise_continue(int y_bg_frise_continue) {
+		this.y_bg_frise_continue = y_bg_frise_continue;
+	}
+
+	public int getId_vue_biathlete_courrant() {
+		return id_vue_biathlete_courrant;
+	}
+
+	public void setId_vue_biathlete_courrant(int id_vue_biathlete_courrant) {
+		this.id_vue_biathlete_courrant = id_vue_biathlete_courrant;
+	}
+
+	public int getPos_vue_biathlete_courrant() {
+		return pos_vue_biathlete_courrant;
+	}
+
+	public void setPos_vue_biathlete_courrant(int pos_vue_biathlete_courrant) {
+		this.pos_vue_biathlete_courrant = pos_vue_biathlete_courrant;
+	}
+
+	public int getDistance_entre_deux() {
+		return distance_entre_deux;
+	}
+
+	public void setDistance_entre_deux(int distance_entre_deux) {
+		this.distance_entre_deux = distance_entre_deux;
+	}
+
+	public InterfaceJoueur getInterfaceJoueur() {
+		return interfaceJoueur;
+	}
+
+	public void setInterfaceJoueur(InterfaceJoueur interfaceJoueur) {
+		this.interfaceJoueur = interfaceJoueur;
+	}
+
+	public int getRef_w() {
+		return ref_w;
+	}
+
+	public int getRef_h() {
+		return ref_h;
+	}
 
 	public BufferedImage getBf_img() {
 		return bf_img;

@@ -207,8 +207,6 @@ public class Performance implements Runnable {
 	}
 
 	public void ajouterPenalite(int nbr_fautes) {
-		System.out.println(this.chrono_perf);
-		System.out.println(penalite);
 		//en fonction de la pénalité a réaliser
 		switch(this.penalite) {
 		case "tour":
@@ -218,7 +216,6 @@ public class Performance implements Runnable {
 			this.chrono_perf += nbr_fautes *  60000;
 			break; 
 		}
-		System.out.println(this.chrono_perf);
 		this.nombre_fautes += nbr_fautes;
 		//On l'autorise a avance
 		setAvancer(true);
@@ -226,11 +223,11 @@ public class Performance implements Runnable {
 
 	private float coefAspiration(float vitesse, int nombre_devant) {
 		//On parcour la liste des groupes
-		for(int i = 0; i <Joueur.course.getListe_groupe().size(); i++) {
+		for(int i = 0; i <Main.joueur.getCourse().getListe_groupe().size(); i++) {
 			//On parcour le groupe
-			for(int j = 0; j>Joueur.course.getListe_groupe().get(i).size(); i++) {
+			for(int j = 0; j>Main.joueur.getCourse().getListe_groupe().get(i).size(); i++) {
 				//Si le groupe correspond au biathlete
-				if(Joueur.course.getListe_groupe().get(i).get(j).getBiathlete().getId() == this.biathlete.getId()){
+				if(Main.joueur.getCourse().getListe_groupe().get(i).get(j).getBiathlete().getId() == this.biathlete.getId()){
 					//On conserve sa position
 					int position_groupe = j+1;
 					break;
@@ -293,7 +290,7 @@ public class Performance implements Runnable {
 		
 		//effort
 		float vitesse = (float) (( a_niveau * this.alea_niveau + b_niveau) * this.effort * ((a_vent * this.vitesse_vent)*this.dir_vent + b_vent) + (-4 * this.pente));
-		System.out.println(vitesse/36);
+	
 		
 		//s'il a des tours de penalité à parcourir ?
 		if (penalite_distance > 0) {
@@ -367,7 +364,7 @@ public class Performance implements Runnable {
 					if(this.list_km_pointage.get(this.pointage_courrant).floatValue() <= distance) {
 
 						//On ajoute le biathlete au classement du pointage courrant
-						Joueur.course.ajouterMembreClassement(this);
+						Main.joueur.getCourse().ajouterMembreClassement(this);
 
 						//On passe au pointage d'apres
 						this.pointage_courrant +=1;
@@ -381,7 +378,7 @@ public class Performance implements Runnable {
 					course_fini = true;
 
 					//On passe le relais
-					Joueur.course.passageRelais(this);
+					Main.joueur.getCourse().passageRelais(this);
 				}
 
 				//PEUT ETRE UN AUTRE MOYEN IL FAUT REFLECHIR 		
@@ -415,7 +412,7 @@ public class Performance implements Runnable {
 					}
 
 					//On supprime la simulation
-					Joueur.course.supprimerSimulationTir(biathlete.getId());
+					Main.joueur.getCourse().supprimerSimulationTir(biathlete.getId());
 					
 					//on réinitialise pour le tir prochain
 					this.supprSimu = false;
@@ -814,7 +811,6 @@ public class Performance implements Runnable {
 				resultat=r1.compareTo(r2);
 			}
 
-			System.out.println();
 			return resultat;
 		}
 	};

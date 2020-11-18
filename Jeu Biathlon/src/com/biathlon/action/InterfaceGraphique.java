@@ -136,6 +136,19 @@ public abstract class InterfaceGraphique extends JPanel {
 		return button;
 	}
 
+	protected void updateInterface(JPanel interface_graphique, Component comp, int pos) {
+		interface_graphique.remove(pos);
+		interface_graphique.add(comp, pos);
+		interface_graphique.validate();
+		/*componentList = interface_graphique.getComponents();
+		for(Component c : componentList){System.out.println(c);}
+		*/
+	}
+
+	//Return l'objet de la classe
+	public JPanel getClassInstance() {
+		return this;
+	}
 
 	protected void actuFenetre(InterfaceGraphique interface_graphique) {
 		Main.fenetre.setContentPane(interface_graphique);

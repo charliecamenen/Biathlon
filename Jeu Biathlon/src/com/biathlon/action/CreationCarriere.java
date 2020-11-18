@@ -2,26 +2,40 @@ package com.biathlon.action;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.rmi.CORBA.Util;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileView;
 
 import com.biathlon.jeu.Main;
 
@@ -112,11 +126,16 @@ public class CreationCarriere extends InterfaceGraphique {
 	//dimensions images femme/homme
 	private final int dim_photo_w = 250;
 	private final int dim_photo_h = 250;
-
+	//Contenue des listes déroulantes
 	private final Object[] list_age = new Object[] {"18","19","20","21"};
 	private final Object[] list_specialite = new Object[] {"Tirs couché","Tirs debout","Ski","Vitesse de tirs"};
 	private final Object[] list_favorite = new Object[] {"Sprint","Mass Start", "Poursuite", "Individuelle","Relay"};
-	
+	//indices des images homme femme dans la liste
+	private int ind_photo_homme = 0;
+	private int ind_photo_femme = 0;
+
+
+
 	//footer
 	private JButton button_valider;
 	private JButton button_retour;
@@ -131,8 +150,82 @@ public class CreationCarriere extends InterfaceGraphique {
 		//On ajoute les objets a leur panel
 		this.positionnerObjet();
 
-	}
+		button_homme_photo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				//Fenetre de choix d'image
+				JFileChooser dialogue = new JFileChooser(new File("."));
+				//Ajoute un filtre pour les PNG uniquement
+				String[] extensions_filtre = new String[] {"png"};
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Images (.png)", extensions_filtre);                                
+				dialogue.addChoosableFileFilter(filter);
+				//Supprime la possibilité d'ouvrir tout les types
+				dialogue.setAcceptAllFileFilterUsed(false);
+				//Affichage du chein dans la barre de recherhe
+				PrintWriter sortie;
+				//Chemin du fichier
+				String fichier_path;
 
+				if (dialogue.showOpenDialog(null)== JFileChooser.APPROVE_OPTION) {
+					//On réccupere le chemin
+					fichier_path = dialogue.getSelectedFile().getPath();
+
+					System.out.println(fichier_path);
+					try {
+						//On print le chemin
+						sortie = new PrintWriter(new FileWriter(fichier_path, true));
+						
+						//On la converti en BufferImage
+						BufferedImage bi = ImageIO.read(new File(fichier_path));
+					
+						//On l'enregistre dans le bon fichier (Homme/Femme photo)
+						System.out.println(getClass().getResource("/images/photo/homme/photo"+list_ico_homme_photo.size()+".png").getPath().replace("%20", " "));
+						
+						
+						File f = new File("C:/Users/Charlie/git/Biathlon/Jeu Biathlon/bin/images/photo/homme/photo4.png");
+						
+						System.out.println();
+			             //.write(bImage, "bmp", new File("C://Users/Rou/Desktop/image.bmp"));
+						ImageIO.write(bi, "png", f);
+
+						//Mise a jour l'interface panel homme photo
+						ind_photo_homme = list_ico_homme_photo.size()-1;
+						
+						//Met a jour l'interface
+						updateInterface(panel_homme_photo,new JLabel( scaleImage(list_ico_homme_photo.get(ind_photo_homme), dim_photo_w,dim_photo_h)) ,0);
+
+						//On ferme la fenetre a la validation
+						sortie.close();
+					} catch (IOException e) {e.printStackTrace();}
+
+				}
+			}
+		}); 
+
+
+		button_femme_image_droite.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+
+				updateInterface(panel_femme_photo,new JLabel(scaleImage(list_ico_femme_photo.get(updateIndicePhoto("f","+")), dim_photo_w,dim_photo_h)),0);
+			}
+		}); 
+		button_femme_image_gauche.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				updateInterface(panel_femme_photo,new JLabel(scaleImage(list_ico_femme_photo.get(updateIndicePhoto("f","-")), dim_photo_w,dim_photo_h)),0);
+			}
+		}); 
+		button_homme_image_droite.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				updateInterface(panel_homme_photo,new JLabel(scaleImage(list_ico_homme_photo.get(updateIndicePhoto("h","+")), dim_photo_w,dim_photo_h)),0);
+			}
+		}); 
+		button_homme_image_gauche.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				updateInterface(panel_homme_photo,new JLabel(scaleImage(list_ico_homme_photo.get(updateIndicePhoto("h","-")), dim_photo_w,dim_photo_h)),0);
+
+			}
+		}); 
+
+	}
 
 
 	public void creerObjet() {
@@ -372,6 +465,42 @@ public class CreationCarriere extends InterfaceGraphique {
 		this.add(panel_footer,BorderLayout.SOUTH);
 	}
 
+	public int updateIndicePhoto(String sexe, String incr) {
+		if(sexe == "h") {
+			if(incr=="+") {
+				if(ind_photo_homme+1 >= list_ico_homme_photo.size()) {
+					ind_photo_homme=0;
+				}else {
+					ind_photo_homme++;
+				}
+			}else {
+				if(ind_photo_homme-1 < 0) {
+					ind_photo_homme = list_ico_homme_photo.size()-1;
+				}else {
+					ind_photo_homme--;
+				}
+			}
+			return ind_photo_homme;
+		}else {
+			if(incr=="+") {
+				if(ind_photo_femme+1 >= list_ico_femme_photo.size()) {
+					ind_photo_femme=0;
+				}else {
+					ind_photo_femme++;
+				}
+
+			}else {
+				if(ind_photo_femme-1 < 0) {
+					ind_photo_femme = list_ico_femme_photo.size()-1;
+				}else {
+					ind_photo_femme--;
+				}
+
+			}
+			return ind_photo_femme;
+		}
+	}
+
 	public GridBagConstraints gbc(int x, int y, int poidsx, int poidsy) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridheight = poidsy ;
@@ -380,21 +509,19 @@ public class CreationCarriere extends InterfaceGraphique {
 		c.gridx = x;
 		return c;
 	}
-	
-	public ArrayList<ImageIcon> setListPhotoDefaut(String sexe) {
-		ArrayList<ImageIcon> list_photo = new ArrayList<ImageIcon>();
-		int taille_fic;
-		/*
-		File file = new File("C:/Users/Charlie/git/Biathlon/Jeu Biathlon/src/images/drapeau/icone");
-		taille_fic = file.list().length;
-		 */
 
-		taille_fic = 3 ;
+	public ArrayList<ImageIcon> setListPhotoDefaut(String sexe) {
+		//Liste des photo
+		ArrayList<ImageIcon> list_photo = new ArrayList<ImageIcon>();
+		//Dossier des photos
+		File file = new File(getClass().getResource("/images/photo/"+sexe+"/").getPath().replaceAll("%20", " "));
+		//Taille du fichier
+		int taille_fic = file.list().length;
+		//Parcour des elements du fichier 
 		for(int i = 1 ; i <= taille_fic; i++) {
-			System.out.println("/images/photo/"+sexe+"/photo"+i+".png");
+			//Remplis la liste de photos
 			list_photo.add(new ImageIcon(getClass().getResource("/images/photo/"+sexe+"/photo"+i+".png")));
 		}
-
 		return list_photo;
 	}
 

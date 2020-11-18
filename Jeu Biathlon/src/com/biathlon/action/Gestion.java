@@ -2,6 +2,7 @@ package com.biathlon.action;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -61,13 +62,15 @@ public class Gestion extends InterfaceGraphique {
 		
 		
 		this.setLayout(new BorderLayout());
-		this.updateInterface(gestion_classement);
+		this.add(panel_header,BorderLayout.NORTH);
+		this.add(gestion_classement,BorderLayout.CENTER);
+		//this.updateInterface(gestion_classement);
 		
 		
 		button_gestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				gestion_accueil = new GestionAccueil();
-				updateInterface(gestion_accueil);
+				updateInterface(getClassInstance(),gestion_accueil,1);
 			}
 		}); 
 		
@@ -75,26 +78,18 @@ public class Gestion extends InterfaceGraphique {
 		button_classement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				gestion_classement = new GestionClassement();
-				updateInterface(gestion_classement);
+				updateInterface(getClassInstance(),gestion_classement,1);
 			}
 		});
 
 		button_resultat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				gestion_resultat = new GestionResultat();
-				updateInterface(gestion_resultat);
+				updateInterface(getClassInstance(),gestion_resultat,1);
 			}
 		});
 	}
 	
-	private void updateInterface(InterfaceGraphique interface_graphique) {
-		this.removeAll();
-		this.add(panel_header, BorderLayout.NORTH);
-		this.add(interface_graphique, BorderLayout.CENTER);
-		//Actualise la fenetre
-		this.actuFenetre(this);
-	}
-
 	
 	public JButton getButton_resultat() {
 		return button_resultat;

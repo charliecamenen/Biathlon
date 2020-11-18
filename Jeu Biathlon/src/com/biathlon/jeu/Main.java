@@ -65,7 +65,7 @@ public class Main {
 		fenetre.setResizable(true);
 
 		//Doit elles etre en premier plan tout le temps ?
-		fenetre.setAlwaysOnTop(true);
+		fenetre.setAlwaysOnTop(false);
 
 		//Acceuil du jeu (au lencement)
 		acceuil = new Accueil();

@@ -26,12 +26,13 @@ import com.biathlon.action.Biathlete;
 import com.biathlon.action.CacheCible;
 import com.biathlon.action.CibleSimulation;
 import com.biathlon.action.Classement;
+import com.biathlon.action.InterfaceGraphique;
 import com.biathlon.action.InterfaceJoueur;
 import com.biathlon.action.Performance;
 import com.biathlon.action.Saison;
 
 @SuppressWarnings("serial")
-public class Scene extends JPanel {
+public class Scene extends InterfaceGraphique {
 
 	private Graphics g2;
 

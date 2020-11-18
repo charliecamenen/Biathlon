@@ -20,7 +20,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ChoixParticipant extends JPanel {
+import com.biathlon.action.InterfaceGraphique;
+
+public class ChoixParticipant extends InterfaceGraphique {
 
 	JButton button_valide;
 	

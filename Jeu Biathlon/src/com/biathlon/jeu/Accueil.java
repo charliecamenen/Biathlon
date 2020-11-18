@@ -11,7 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class Accueil extends JPanel{
+import com.biathlon.action.InterfaceGraphique;
+
+public class Accueil extends InterfaceGraphique{
 	JButton button_course;
 	JButton button_carriere;
 	JLabel titre;

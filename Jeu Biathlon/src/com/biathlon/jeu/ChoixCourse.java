@@ -16,7 +16,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ChoixCourse extends JPanel {
+import com.biathlon.action.InterfaceGraphique;
+
+public class ChoixCourse extends InterfaceGraphique {
 	
 	JButton button_sprint;
 	JButton button_poursuite;

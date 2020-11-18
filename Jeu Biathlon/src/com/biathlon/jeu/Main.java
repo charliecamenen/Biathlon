@@ -17,7 +17,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.biathlon.action.Biathlete;
+import com.biathlon.action.ChargementPartie;
 import com.biathlon.action.Gestion;
+import com.biathlon.action.InterfaceGraphique;
 import com.biathlon.action.Performance;
 import com.biathlon.action.Saison;
 import com.biathlon.courses.Course;
@@ -105,8 +107,11 @@ public class Main {
 
 		case 2://On lance une carriere
 
-			gestion = new Gestion();
-			fenetre.setContentPane(gestion);
+			ChargementPartie chargement_partie = new ChargementPartie();
+			fenetre.setContentPane(chargement_partie);
+			
+			//gestion = new Gestion();
+			//fenetre.setContentPane(gestion);
 			fenetre.setVisible(true);
 			//LocalDateTime test = LocalDateTime.now();
 			//System.out.println(test.getHour() + 5);
@@ -168,7 +173,7 @@ public class Main {
 			default:
 				//On ajoute a la fenetre
 				choix_participant = new ChoixParticipant("H");
-			}
+			}
 
 
 			break;

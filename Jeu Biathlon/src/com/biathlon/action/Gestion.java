@@ -22,269 +22,80 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import com.biathlon.jeu.Main;
 
-public class Gestion extends JPanel {
+public class Gestion extends InterfaceGraphique {
 
+	//Bouton du header
 	private JButton button_resultat;
 	private JButton button_classement;
 	private JButton button_gestion;
-	
-	private JPanel panel_button;
-	private JPanel panel_content;
-	private JPanel panel_filtre;
+	private JButton button_calendrier;
+	//Panel du header
 	private JPanel panel_header;
-	private JTable tableau;
 	
-	private JComboBox combobox_annee;
-	private JComboBox combobox_sexe;
-	private JComboBox combobox_type_course;
-	
-	private GridBagConstraints gbc;
-	//Image image;
-
+	//Panel de contenue
+	private GestionResultat gestion_resultat;
+	private GestionAccueil gestion_accueil;
+	private GestionCalendrier gestion_calendrier;
+	private GestionClassement gestion_classement;
 
 	public Gestion() {
 		super();
-		Color tableau_bg_color = new Color(32,56,100);
-		Color tableau_txt_color = new Color(255,255,255);
-		Color tableau_grid_color = new Color(255,255,255);
-		Color combobox_bg_color = new Color(255,255,255);
-		Font combobox_font = new Font("calibri", Font.BOLD, 20);
-		
-		//  image =(new javax.swing.ImageIcon(getClass().getResource("/img/background.jpg"))).getImage();
-		panel_button = new JPanel();
-		panel_content = new JPanel();
-		panel_filtre = new JPanel();
+		//Créaion du panel du header
 		panel_header = new JPanel();
-		button_gestion = new JButton("GESTION");
-		button_classement = new JButton("CLASSEMENT");
-		button_resultat = new JButton("CALENDRIER / RESULTAT");
+		panel_header.setBackground(new Color(40,40,40));
+		
+		//Création des boutons de header
+		button_classement = this.headerButtonStyle(new JButton("CLASSEMENT"));
+		button_calendrier = this.headerButtonStyle(new JButton("CALENDRIER"));
+		button_resultat = this.headerButtonStyle(new JButton("RESULTAT"));
+		button_gestion = this.headerButtonStyle(new JButton("GESTION"));
+		
+		//On ajoute les boutons dans le header
+		panel_header.add(button_gestion);
+		panel_header.add(button_classement);
+		panel_header.add(button_calendrier);
+		panel_header.add(button_resultat);
 
-		combobox_annee = new JComboBox(new Object[] {"2020","2021","2022"});
-		combobox_sexe = new JComboBox(new Object[] {"Homme","Femme","Nation"});
-		combobox_type_course = new JComboBox(new Object[] {"Général" , "Sprint","Poursuite","Mass Start",  "Individuel" , "Relai", "Relai Mixte", "Relain Mixte Simple" });
-		
-		combobox_annee.setBackground(combobox_bg_color);
-		combobox_sexe.setBackground(combobox_bg_color);
-		combobox_type_course.setBackground(combobox_bg_color);
-
-		combobox_annee.setFont(combobox_font);
-		combobox_sexe.setFont(combobox_font);
-		combobox_type_course.setFont(combobox_font);
-		
-		combobox_annee.setPreferredSize(new Dimension(200, 35));
-		combobox_sexe.setPreferredSize(new Dimension(200, 35));
-		combobox_type_course.setPreferredSize(new Dimension(200, 35));
-		//panel_filtre.setLayout(new FlowLayout(FlowLayout.LEFT, 20 , 20));
-		panel_filtre.add(combobox_annee);
-		panel_filtre.add(combobox_sexe);
-		panel_filtre.add(combobox_type_course);
+		//Affichage d'une page par défaut
+		gestion_classement = new GestionClassement();
 		
 		
+		this.setLayout(new BorderLayout());
+		this.updateInterface(gestion_classement);
 		
-		Object[][] donnees = {
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-		};
-
-		String[] entetes = {"Classement", "Biathlete","Nat", "Points"};		
-		tableau = new JTable(donnees, entetes);
-		
-		
-		DefaultTableCellRenderer test = new DefaultTableCellRenderer();
-		test.setFont(new Font("calibri", Font.BOLD, 20));
-		test.setIcon(new ImageIcon(getClass().getResource("/images/drapeau/allemagne.png")));
-		
-	
-		
-		tableau.getColumnModel().getColumn(2).setCellRenderer(test);
-		
-		//Font de l'entete
-		tableau.getTableHeader().setFont(new Font("calibri", Font.BOLD, 25));
-		//Font du contenue
-		tableau.setFont(new Font("calibri", Font.PLAIN, 20));
-		//Couleur du texte
-		tableau.setForeground(tableau_txt_color);
-		
-		//Hauteur des cellules
-		tableau.setRowHeight(30);
-		//Largeur de la colonne 0
-		
-		
-		tableau.getColumnModel().getColumn(0).setWidth(20);
-		//tableau.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
-		//tableau.setGridColor(new Color(34,42,53));
-		tableau.setGridColor(tableau_grid_color);
-		//tableau.setBackground(new Color(34,42,53));
-		tableau.setBackground(tableau_bg_color);
-		//Container mainContainer = this.getContentPain();
-		//mainContainer.setLayout(new BorderLayout(8,6));
-		//mainContainer.setBackground(Color.YELLOW);
-		this.setLayout(new GridBagLayout());
-		/*gbc = new GridBagConstraints();
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.gridy = 0;
-		*/
-		panel_button.add(button_gestion);
-		/*
-		gbc.gridx = 1;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.gridy = 0;*/
-		panel_button.add(button_classement);
-		/*
-		gbc.gridx = 2;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.gridy = 0;*/
-		panel_button.add(button_resultat);
-		
-	//	panel_button.setLayout(new FlowLayout(2));
-		
-		
-		//gbc.fill = GridBagConstraints.BOTH;
-
-		/*
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 3;
-		gbc.gridy = 0;
-		*/
-		panel_header.add(panel_button, BorderLayout.CENTER);
-	//	this.setBackground(tableau_bg_color);
-		/*
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.gridy = 3;
-		*/
-		panel_header.add(panel_filtre,BorderLayout.SOUTH);
-		
-		this.add(panel_header,BorderLayout.NORTH);
-		/*
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 15;
-		gbc.gridy = 4;
-		*/
-		panel_content.setLayout(new FlowLayout(FlowLayout.CENTER, 20 , 20));
-		//panel_content.setLayout(new FlowLayout(FlowLayout.CENTER));
-		//panel_content.add(new JScrollPane(tableau));
-		this.add(new JScrollPane(tableau),BorderLayout.CENTER);
-		/*
-		button_course.setPreferredSize(new Dimension(350, 50));
-		button_course.setFont(new Font("calibri", Font.PLAIN, 20));
-		button_course.setBackground(Color.white);
-
-		instruction = new JLabel("Choisissez un mode de jeu");
-		instruction.setFont(new Font("calibri", Font.PLAIN, 14));
-		instruction.setForeground(Color.white);
-
-		 */
 		
 		button_gestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				panel_content.removeAll();
+				gestion_accueil = new GestionAccueil();
+				updateInterface(gestion_accueil);
 			}
 		}); 
 		
 		
 		button_classement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				panel_content.removeAll();
-				Object[][] donnees = {
-						{"Johnathan", "Sykes", Color.red, true},
-						{"Nicolas", "Van de Kampf", Color.black, true},
-						{"Damien", "Cuthbert", Color.cyan, true},
-						{"Corinne", "Valance", Color.blue, false},
-						{"Emilie", "Schrödinger", Color.magenta, false},
-						{"Delphine", "Duke", Color.yellow, false},
-						{"Eric", "Trump", Color.pink, true},
-						{"Johnathan", "Sykes", Color.red, true},
-						{"Nicolas", "Van de Kampf", Color.black, true},
-						{"Damien", "Cuthbert", Color.cyan, true},
-						{"Corinne", "Valance", Color.blue, false},
-						{"Emilie", "Schrödinger", Color.magenta, false},
-						{"Delphine", "Duke", Color.yellow, false},
-						{"Eric", "Trump", Color.pink, true},
-						{"Johnathan", "Sykes", Color.red, true},
-						{"Nicolas", "Van de Kampf", Color.black, true},
-						{"Damien", "Cuthbert", Color.cyan, true},
-						{"Corinne", "Valance", Color.blue, false},
-						{"Emilie", "Schrödinger", Color.magenta, false},
-						{"Delphine", "Duke", Color.yellow, false},
-						{"Eric", "Trump", Color.pink, true},
-						{"Johnathan", "Sykes", Color.red, true},
-						{"Nicolas", "Van de Kampf", Color.black, true},
-						{"Damien", "Cuthbert", Color.cyan, true},
-						{"Corinne", "Valance", Color.blue, false},
-						{"Emilie", "Schrödinger", Color.magenta, false},
-						{"Delphine", "Duke", Color.yellow, false},
-						{"Eric", "Trump", Color.pink, true},
-						{"Johnathan", "Sykes", Color.red, true},
-						{"Nicolas", "Van de Kampf", Color.black, true},
-						{"Damien", "Cuthbert", Color.cyan, true},
-						{"Corinne", "Valance", Color.blue, false},
-						{"Emilie", "Schrödinger", Color.magenta, false},
-						{"Delphine", "Duke", Color.yellow, false},
-						{"Eric", "Trump", Color.pink, true},
-				};
-
-				String[] entetes = {"Prénom", "Nom", "Couleur favorite", "Homme"};
-
-				tableau = new JTable(donnees, entetes);
-				panel_content.add(new JScrollPane(tableau), gbc);
-				//Main.gestion.getPanel_content().removeAll();
-				//Main.gestion.getPanel_content().add(new JScrollPane(tableau), gbc);
+				gestion_classement = new GestionClassement();
+				updateInterface(gestion_classement);
 			}
 		});
 
 		button_resultat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				panel_content.removeAll();
+				gestion_resultat = new GestionResultat();
+				updateInterface(gestion_resultat);
 			}
 		});
 	}
+	
+	private void updateInterface(InterfaceGraphique interface_graphique) {
+		this.removeAll();
+		this.add(panel_header, BorderLayout.NORTH);
+		this.add(interface_graphique, BorderLayout.CENTER);
+		//Actualise la fenetre
+		this.actuFenetre(this);
+	}
 
-
+	
 	public JButton getButton_resultat() {
 		return button_resultat;
 	}
@@ -313,33 +124,6 @@ public class Gestion extends JPanel {
 	public void setButton_gestion(JButton button_gestion) {
 		this.button_gestion = button_gestion;
 	}
-
-
-	public JPanel getPanel_button() {
-		return panel_button;
-	}
-
-
-	public void setPanel_button(JPanel panel_button) {
-		this.panel_button = panel_button;
-	}
-
-
-	public JPanel getPanel_content() {
-		return panel_content;
-	}
-
-
-	public void setPanel_content(JPanel panel_content) {
-		this.panel_content = panel_content;
-	}
-
-	/* public void paintComponent(Graphics g)
-	   {
-	     g.drawImage (image, 0, 0, null); // elle doit etre avant
-	     super.paintComponent(g); // lui il s'occupe de redessiner les composant enfant.
-	   }*/
-	
 	
 	
 }

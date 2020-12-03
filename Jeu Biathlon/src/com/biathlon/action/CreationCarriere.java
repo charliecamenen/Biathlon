@@ -3,12 +3,16 @@ package com.biathlon.action;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.TextField;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -37,15 +41,13 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileView;
 
+import com.biathlon.jeu.Accueil;
 import com.biathlon.jeu.Main;
 
 public class CreationCarriere extends InterfaceGraphique {
 
 
-	//PANEL de la page
-	private JPanel panel_header;
-	private JPanel panel_content;
-	private JPanel panel_footer;
+
 	//Homme et femme
 	private JPanel panel_homme;
 	private JPanel panel_femme;
@@ -82,9 +84,11 @@ public class CreationCarriere extends InterfaceGraphique {
 	private JLabel label_choix_pays;
 	private JComboBox combobox_pays;
 	private JPanel panel_pays;
+	private JPanel panel_pays_gauche;
+	private JPanel panel_pays_droite;	
 	private JLabel label_pays_image;
-
-
+	private JButton button_alea;
+	
 	//homme
 	private JLabel label_homme_titre;
 	private JLabel label_homme_nom;
@@ -102,7 +106,6 @@ public class CreationCarriere extends InterfaceGraphique {
 	private JButton button_homme_image_droite;
 	private JButton button_homme_image_gauche;
 	private ArrayList<ImageIcon> list_ico_homme_photo;
-	private JButton button_homme_alea;
 
 	//femme
 	private JLabel label_femme_titre;
@@ -121,7 +124,6 @@ public class CreationCarriere extends InterfaceGraphique {
 	private JButton button_femme_image_droite;
 	private JButton button_femme_image_gauche;
 	private ArrayList<ImageIcon> list_ico_femme_photo;
-	private JButton button_femme_alea;
 
 	//dimensions images femme/homme
 	private final int dim_photo_w = 250;
@@ -134,21 +136,17 @@ public class CreationCarriere extends InterfaceGraphique {
 	private int ind_photo_homme = 0;
 	private int ind_photo_femme = 0;
 
-
-
 	//footer
 	private JButton button_valider;
 	private JButton button_retour;
 
-
-
 	public CreationCarriere() {
-		super();
+		super("/images/background/novemesto.png");
 
 		//On instancie les objets
 		this.creerObjet();
 		//On ajoute les objets a leur panel
-		this.positionnerObjet();
+		this.afficheBorderElement();
 
 		button_homme_photo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -168,24 +166,26 @@ public class CreationCarriere extends InterfaceGraphique {
 				if (dialogue.showOpenDialog(null)== JFileChooser.APPROVE_OPTION) {
 					//On réccupere le chemin
 					fichier_path = dialogue.getSelectedFile().getPath();
-
-					System.out.println(fichier_path);
+					
+			//		System.out.println(fichier_path);
 					try {
 						//On print le chemin
 						sortie = new PrintWriter(new FileWriter(fichier_path, true));
 						
+						//Image chargé
+						ImageIcon image_charge = new ImageIcon(fichier_path);
+						
+						//Ajoute l'image a la liste 
+						list_ico_homme_photo.add(image_charge);
+						
 						//On la converti en BufferImage
 						BufferedImage bi = ImageIO.read(new File(fichier_path));
-					
-						//On l'enregistre dans le bon fichier (Homme/Femme photo)
-						System.out.println(getClass().getResource("/images/photo/homme/photo"+list_ico_homme_photo.size()+".png").getPath().replace("%20", " "));
 						
-						
-						File f = new File("C:/Users/Charlie/git/Biathlon/Jeu Biathlon/bin/images/photo/homme/photo4.png");
-						
-						System.out.println();
-			             //.write(bImage, "bmp", new File("C://Users/Rou/Desktop/image.bmp"));
-						ImageIO.write(bi, "png", f);
+						//On defini le chemin dans lequel enregistrer
+						String path = getClass().getResource("/images/photo/homme/").getPath().replace("%20", " ");
+		
+						//Enregistre l'image dans le dossier bin
+						ImageIO.write(bi, "png", new File(path+"/photo"+list_ico_homme_photo.size()+".png"));
 
 						//Mise a jour l'interface panel homme photo
 						ind_photo_homme = list_ico_homme_photo.size()-1;
@@ -201,6 +201,58 @@ public class CreationCarriere extends InterfaceGraphique {
 			}
 		}); 
 
+		button_femme_photo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				//Fenetre de choix d'image
+				JFileChooser dialogue = new JFileChooser(new File("."));
+				//Ajoute un filtre pour les PNG uniquement
+				String[] extensions_filtre = new String[] {"png"};
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Images (.png)", extensions_filtre);                                
+				dialogue.addChoosableFileFilter(filter);
+				//Supprime la possibilité d'ouvrir tout les types
+				dialogue.setAcceptAllFileFilterUsed(false);
+				//Affichage du chein dans la barre de recherhe
+				PrintWriter sortie;
+				//Chemin du fichier
+				String fichier_path;
+
+				if (dialogue.showOpenDialog(null)== JFileChooser.APPROVE_OPTION) {
+					//On réccupere le chemin
+					fichier_path = dialogue.getSelectedFile().getPath();
+					
+			//		System.out.println(fichier_path);
+					try {
+						//On print le chemin
+						sortie = new PrintWriter(new FileWriter(fichier_path, true));
+						
+						//Image chargé
+						ImageIcon image_charge = new ImageIcon(fichier_path);
+						
+						//Ajoute l'image a la liste 
+						list_ico_femme_photo.add(image_charge);
+						
+						//On la converti en BufferImage
+						BufferedImage bi = ImageIO.read(new File(fichier_path));
+						
+						//On defini le chemin dans lequel enregistrer
+						String path = getClass().getResource("/images/photo/femme/").getPath().replace("%20", " ");
+		
+						//Enregistre l'image dans le dossier bin
+						ImageIO.write(bi, "png", new File(path+"/photo"+list_ico_femme_photo.size()+".png"));
+
+						//Mise a jour l'interface panel homme photo
+						ind_photo_femme = list_ico_femme_photo.size()-1;
+						
+						//Met a jour l'interface
+						updateInterface(panel_femme_photo,new JLabel( scaleImage(list_ico_femme_photo.get(ind_photo_femme), dim_photo_w,dim_photo_h)) ,0);
+
+						//On ferme la fenetre a la validation
+						sortie.close();
+					} catch (IOException e) {e.printStackTrace();}
+
+				}
+			}
+		}); 
 
 		button_femme_image_droite.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -225,14 +277,34 @@ public class CreationCarriere extends InterfaceGraphique {
 			}
 		}); 
 
+		button_alea.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+
+				updateInterface(panel_femme_photo,new JLabel(scaleImage(list_ico_femme_photo.get(updateIndicePhoto("f","+")), dim_photo_w,dim_photo_h)),0);
+			}
+		});
+		
+		button_retour.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				Accueil acceuil = new Accueil();
+				actuFenetre(acceuil);
+			}
+		});
+		
+		button_valider.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+
+				updateInterface(panel_femme_photo,new JLabel(scaleImage(list_ico_femme_photo.get(updateIndicePhoto("f","+")), dim_photo_w,dim_photo_h)),0);
+			}
+		});
 	}
 
 
 	public void creerObjet() {
 		//3 borderlayout
-		panel_content = new JPanel();
-		panel_header = new JPanel();
-		panel_footer = new JPanel();
+		panel_content = panelSansBgStyle(new JPanel());
+		panel_header = panelSansBgStyle(new JPanel());
+		panel_footer = panelSansBgStyle(new JPanel());
 		//sous panel homme et femme
 		panel_homme_info_photo = new JPanel();
 		panel_femme_info_photo = new JPanel();
@@ -262,16 +334,20 @@ public class CreationCarriere extends InterfaceGraphique {
 		//Homme femme
 		panel_homme = new JPanel();
 		panel_femme = new JPanel();
+		
 		//Panel pour les pays
 		panel_pays = new JPanel();
-
+		panel_pays_gauche = new JPanel();
+		panel_pays_droite = new JPanel();
+		
 		//Header
 		label_titre = titreLabelStyle(new JLabel("Créez vos Biathlètes"));
-		label_description = labelStyle(new JLabel("Test"));
+		label_description = labelStyle(new JLabel(" "));
 		label_choix_pays = sousTitreLabelStyle(new JLabel("Nationalité que vous dirigerez : "));
 		combobox_pays = comboboxStyle(this.creerComboBoxPays());
 		label_pays_image = new JLabel(new ImageIcon(getClass().getResource("/images/drapeau/grand/allemagne.png")));
-
+		button_alea = mediumButtonStyle(new JButton("Aléatoire"));
+		
 		//footer
 		button_valider = mediumButtonStyle(new JButton("Valider"));
 		button_retour = mediumButtonStyle(new JButton("Retour"));
@@ -288,7 +364,6 @@ public class CreationCarriere extends InterfaceGraphique {
 		combobox_homme_age = comboboxStyle(new JComboBox(list_age));
 		combobox_homme_specialite = comboboxStyle(new JComboBox(list_specialite));
 		combobox_homme_favorite = comboboxStyle(new JComboBox(list_favorite));
-		button_homme_alea = mediumButtonStyle(new JButton("Aléatoire"));
 
 		label_homme_photo = sousTitreLabelStyle(new JLabel("Charger une photo : "));
 		button_homme_image_gauche = new JButton("<");
@@ -308,7 +383,6 @@ public class CreationCarriere extends InterfaceGraphique {
 		combobox_femme_age = comboboxStyle(new JComboBox(list_age));
 		combobox_femme_specialite = comboboxStyle(new JComboBox(list_specialite));
 		combobox_femme_favorite = comboboxStyle(new JComboBox(list_favorite));
-		button_femme_alea = mediumButtonStyle(new JButton("Aléatoire"));
 
 		label_femme_photo = sousTitreLabelStyle(new JLabel("Charger une photo : "));
 		button_femme_photo = smallButtonStyle(new JButton("Parcourir"));
@@ -316,30 +390,32 @@ public class CreationCarriere extends InterfaceGraphique {
 		list_ico_femme_photo = this.setListPhotoDefaut("femme");
 		button_femme_image_droite = new JButton(">");
 	}
-
-	public void positionnerObjet() {
+	
+	
+	public void afficheBorderElement() {
+		
 		//On rempli le label de pays 
-		panel_pays.setLayout(new FlowLayout(FlowLayout.LEFT, 30,10));
-		panel_pays.add(label_choix_pays);
-		panel_pays.add(combobox_pays);
-		panel_pays.add(label_pays_image);
-
-
-		panel_pays.setBackground(color_bg);
+		panel_pays_gauche.setLayout(new FlowLayout(FlowLayout.LEFT, 30,10));
+		panel_pays_gauche.add(label_choix_pays);
+		panel_pays_gauche.add(combobox_pays);
+		panel_pays_gauche.add(label_pays_image);
+		panel_pays_droite.setLayout(new FlowLayout(FlowLayout.RIGHT, 30,10));
+		panel_pays_droite.add(button_alea);
+		panel_pays.setLayout(new GridLayout(1,2));
+		panel_pays.add(panel_pays_gauche);
+		panel_pays.add(panel_pays_droite);
+		panel_pays_gauche.setBackground(color_bg);
+		panel_pays_droite.setBackground(color_bg);
+		
 		//On rempli le header
 		panel_header.setLayout(new GridLayout(3,1));
 		panel_header.add(label_titre);
 		panel_header.add(label_description);
-		panel_header.add(panel_pays);
-		panel_header.setBackground(color_bg);
-
 
 		//on rempli le footer
 		panel_footer.setLayout(new FlowLayout(FlowLayout.CENTER , 50,10));
 		panel_footer.add(button_valider);
 		panel_footer.add(button_retour);
-		panel_footer.setBackground(color_bg);
-
 
 		//Rempli chaque panel homme
 		panel_homme_prenom.setLayout(new FlowLayout(FlowLayout.RIGHT, 10,10));
@@ -366,10 +442,9 @@ public class CreationCarriere extends InterfaceGraphique {
 
 		//panel homme photo
 		panel_homme_photo.setLayout(new GridBagLayout());
-		panel_homme_photo.add(new JLabel(this.scaleImage(list_ico_homme_photo.get(1), dim_photo_w,dim_photo_h))  , gbc(0,0,1,4));
-		panel_homme_photo.add(panel_homme_button_fleche, gbc(0,5,1,1));
-		panel_homme_photo.add(panel_homme_parcourir_photo,gbc(0,6,1,1));
-		panel_homme_photo.add(button_homme_alea, gbc(0,7,1,1));
+		panel_homme_photo.add(new JLabel(this.scaleImage(list_ico_homme_photo.get(1), dim_photo_w,dim_photo_h))  , gbc(0,0,4,1,0,0,null,0));
+		panel_homme_photo.add(panel_homme_button_fleche, gbc(5,0,1,1,0,0, null,0));
+		panel_homme_photo.add(panel_homme_parcourir_photo,gbc(6,0,1,1,0,0,null,0));
 		//Panel Homme info
 		panel_homme_info.setLayout(new GridLayout(5,1));
 		panel_homme_info.add(panel_homme_prenom);
@@ -413,6 +488,8 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_femme_specialite.setLayout(new FlowLayout(FlowLayout.RIGHT, 10,10));
 		panel_femme_specialite.add(label_femme_specialite);
 		panel_femme_specialite.add(combobox_femme_specialite);
+		panel_femme_favorite.add(label_femme_favorite);
+		panel_femme_favorite.add(combobox_femme_favorite);
 		//sous panel pour photo
 		panel_femme_button_fleche.setLayout(new FlowLayout(FlowLayout.RIGHT, 10,10));
 		panel_femme_button_fleche.add(button_femme_image_gauche);
@@ -423,16 +500,16 @@ public class CreationCarriere extends InterfaceGraphique {
 
 		//panel femme photo
 		panel_femme_photo.setLayout(new GridBagLayout());
-		panel_femme_photo.add(new JLabel(this.scaleImage(list_ico_femme_photo.get(0), dim_photo_w,dim_photo_h))  , gbc(0,0,1,4));
-		panel_femme_photo.add(panel_femme_button_fleche, gbc(0,5,1,1));
-		panel_femme_photo.add(panel_femme_parcourir_photo,gbc(0,6,1,1));
-		panel_femme_photo.add(button_femme_alea, gbc(0,7,1,1));
+		panel_femme_photo.add(new JLabel(this.scaleImage(list_ico_femme_photo.get(1), dim_photo_w,dim_photo_h))  , gbc(0,0,4,1,0,0,null,0));
+		panel_femme_photo.add(panel_femme_button_fleche, gbc(5,0,1,1,0,0,null,0));
+		panel_femme_photo.add(panel_femme_parcourir_photo,gbc(6,0,1,1,0,0,null,0));
 		//Panel femme info
-		panel_femme_info.setLayout(new GridLayout(4,1));
+		panel_femme_info.setLayout(new GridLayout(5,1));
 		panel_femme_info.add(panel_femme_prenom);
 		panel_femme_info.add(panel_femme_nom);
 		panel_femme_info.add(panel_femme_age);
 		panel_femme_info.add(panel_femme_specialite);
+		panel_femme_info.add(panel_femme_favorite);
 
 		//On rempli femme
 		panel_femme_info_photo.setLayout(new GridLayout(1,2));
@@ -446,6 +523,7 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_femme_age.setBackground(color_bg);
 		panel_femme_photo.setBackground(color_bg);
 		panel_femme_specialite.setBackground(color_bg);
+		panel_femme_favorite.setBackground(color_bg);
 		panel_femme_prenom.setBackground(color_bg);
 		panel_femme_nom.setBackground(color_bg);
 		panel_femme_info.setBackground(color_bg);
@@ -453,16 +531,17 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_femme_button_fleche.setBackground(color_bg);
 		panel_femme_parcourir_photo.setBackground(color_bg);
 
+		
+		
 		//Content
-		panel_content.setLayout(new GridLayout(1,2));
-		panel_content.add(panelStyle(panel_homme));
-		panel_content.add(panelStyle(panel_femme));
-		panel_content.setBackground(color_bg);
+		panel_content.setLayout(new GridBagLayout());
+		panel_content.add(panelStyle(panel_pays), gbc(0,0,0,0,1,2, new Insets(10,10,10,10) ,GridBagConstraints.BOTH) );
+		panel_content.add(panelStyle(panel_homme),gbc(1,0,0,0,1,1, new Insets(10,10,10,10) ,0) ) ;
+		panel_content.add(panelStyle(panel_femme),gbc(1,1,0,0,1,1, new Insets(10,10,10,10) ,0) );
 
-		this.setLayout(new BorderLayout());
-		this.add(panel_header,BorderLayout.NORTH);
-		this.add(panel_content,BorderLayout.CENTER);
-		this.add(panel_footer,BorderLayout.SOUTH);
+
+		super.afficheBorderElement();
+		
 	}
 
 	public int updateIndicePhoto(String sexe, String incr) {
@@ -501,14 +580,7 @@ public class CreationCarriere extends InterfaceGraphique {
 		}
 	}
 
-	public GridBagConstraints gbc(int x, int y, int poidsx, int poidsy) {
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridheight = poidsy ;
-		c.gridwidth = poidsx ;
-		c.gridy = y;
-		c.gridx = x;
-		return c;
-	}
+
 
 	public ArrayList<ImageIcon> setListPhotoDefaut(String sexe) {
 		//Liste des photo

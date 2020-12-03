@@ -17,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.biathlon.action.Biathlete;
-import com.biathlon.action.ChargementPartie;
 import com.biathlon.action.Gestion;
 import com.biathlon.action.InterfaceGraphique;
 import com.biathlon.action.Performance;
@@ -41,17 +40,22 @@ public class Main {
 	public static Course course_simple;
 	public static Performance performance;
 	public static JFrame fenetre;
-
 	public static Chrono chrono;
+	//Ref de mon ordi
+	public final static int ref_w = 1594;
+	public final static int ref_h = 870;
+	public final static Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 
 	public static void main(String[] args) {
 
+
+		//Instanciation de la base de donnée
+		database = new SqlBase();
+		
 		fenetre = new JFrame("Jeu Biathlon");
 		//Ferme la fenetre si on clique sur la croix
 		fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//On utilise la taille maximale de l'ecran
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		// Taille de l'écran 
 		System.out.println(dimension.getWidth() + " " + dimension.getHeight() );
 		if(dimension.getWidth() > 1.84*dimension.getHeight()) {
@@ -65,7 +69,7 @@ public class Main {
 		fenetre.setResizable(true);
 
 		//Doit elles etre en premier plan tout le temps ?
-		fenetre.setAlwaysOnTop(false);
+		fenetre.setAlwaysOnTop(true);
 
 		//Acceuil du jeu (au lencement)
 		acceuil = new Accueil();
@@ -86,45 +90,6 @@ public class Main {
 
 	}
 
-	public static void typePartieFenetre(int choix){
-		//Instanciation de la partie utilisateur
-		//useraction = new UserAction();
-
-		//Instanciation de la base de donnée
-		database = new SqlBase();
-
-		switch(choix){
-		case 1://On lance une course simple
-
-			//On créé l'objet joueur
-			joueur = new Joueur("course");
-
-			//Ouvre la fenetre choix course
-			ChoixCourse choix_course = new ChoixCourse();
-			fenetre.setContentPane(choix_course);
-			fenetre.setVisible(true);
-			break;
-
-		case 2://On lance une carriere
-
-			ChargementPartie chargement_partie = new ChargementPartie();
-			fenetre.setContentPane(chargement_partie);
-			
-			//gestion = new Gestion();
-			//fenetre.setContentPane(gestion);
-			fenetre.setVisible(true);
-			//LocalDateTime test = LocalDateTime.now();
-			//System.out.println(test.getHour() + 5);
-			//On créée l'objet joueur
-			//joueur = new Joueur("carriere");
-
-			//On appel la fonction qui a le switch case
-			//lancerJeu();
-
-			//saison = new Saison();
-			break;
-		}
-	}
 
 	public static void choixParticipantFenetre(String ind_mult, String sexe) {
 

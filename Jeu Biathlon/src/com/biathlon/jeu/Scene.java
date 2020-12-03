@@ -38,10 +38,6 @@ public class Scene extends InterfaceGraphique {
 
 	private BufferedImage bf_img;
 
-	//Ref de mon ordi
-	final int ref_w = 1594;
-	final int ref_h = 870;
-
 	/*** VARIABLE QUI CONCERNENT LES OBJET A AFFICHER SUR LA SCENE EN HAUT A GAUCHE ***/
 
 	//Circuit
@@ -213,27 +209,7 @@ public class Scene extends InterfaceGraphique {
 	}
 
 
-	//Renvoie la taille réelle adapté a la résolution de l'écran du joueur
-	//Prend en parametre l'iconeimage afin de modifier la taille prédéfini par rapport aux ref
-	public int propTailleImage(int ico_size, char orientation) {
-		int taille = 0;
-		//Si c'est en paysage
-		if(orientation == 'w') {
-			taille = (int)Math.round(((float)ico_size / ref_w)*this.getWidth());
-		}else {
-			taille = (int)Math.round(((float)ico_size / ref_h)*this.getHeight());
-		}
-
-		return taille;
-	}
-
-	public int propTaillePolice(float ico_size) {
-		int taille_police;
-		//Calcul la taille de la nouvelle police
-		taille_police = (int)Math.round((ico_size / ref_w)*this.getWidth());
-
-		return taille_police;
-	}
+	
 
 	public void deplacementFond() {
 		this.x_bg_frise1 += 4;
@@ -971,13 +947,7 @@ public class Scene extends InterfaceGraphique {
 		this.interfaceJoueur = interfaceJoueur;
 	}
 
-	public int getRef_w() {
-		return ref_w;
-	}
 
-	public int getRef_h() {
-		return ref_h;
-	}
 
 	public BufferedImage getBf_img() {
 		return bf_img;

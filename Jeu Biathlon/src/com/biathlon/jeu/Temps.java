@@ -1,5 +1,7 @@
 package com.biathlon.jeu;
 
+import com.biathlon.action.Gestion;
+
 public class Temps implements Runnable{
 
 	//Durée entre 2 actualisation d'écran en miliseconde

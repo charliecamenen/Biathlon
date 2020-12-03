@@ -9,6 +9,7 @@ import java.awt.Font;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -16,42 +17,81 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class GestionClassement extends InterfaceGraphique {
 
-//	private JPanel panel_content;
+	//	private JPanel panel_content;
 	private JPanel panel_filtre;
-	
+
 	private JComboBox combobox_annee;
 	private JComboBox combobox_sexe;
 	private JComboBox combobox_type_course;
-	
+
 	private JTable tableau;
 
 	public GestionClassement() {
-		super();
-		Color tableau_bg_color = new Color(32,56,100);
-		Color tableau_txt_color = new Color(255,255,255);
-		Color tableau_grid_color = new Color(255,255,255);
-		Color combobox_bg_color = new Color(255,255,255);
+		super("/images/background/novemesto.png");
+
+		//On instancie les objets
+		this.creerObjet();
+		//On ajoute les objets a leur panel
+		this.afficheElement();
+	}
+
+	private void creerObjet() {
+		// TODO Auto-generated method stub
+
+		//panel principaux du borderLayout
+		panel_content = panelSansBgStyle(new InterfaceGraphique(""));
+		panel_footer = panelSansBgStyle(new JPanel());
+		panel_header = panelSansBgStyle(new JPanel());
+		panel_est = panelSansBgStyle(new JPanel());
+		panel_ouest = panelSansBgStyle(new JPanel());
 		
-		//panel_content = new JPanel();
-		panel_filtre = new JPanel();
+		this.setDimensionOfBorderElement(50, 100, 150, 150);
 		
+		//Panel des filtres pour le tableau
+		panel_filtre = panelSansBgStyle(new JPanel());
+		panel_filtre.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panel_filtre.setPreferredSize(new Dimension(0,50));
 		//Combobox de filtre
 		combobox_annee = comboboxStyle(new JComboBox(new Object[] {"2020","2021","2022"}));
 		combobox_sexe = comboboxStyle(new JComboBox(new Object[] {"Homme","Femme","Nation"}));
 		combobox_type_course = comboboxStyle(new JComboBox(new Object[] {"Général" , "Sprint","Poursuite","Mass Start",  "Individuel" , "Relai", "Relai Mixte", "Relain Mixte Simple" }));
-		
 
+	}
+
+	protected void afficheElement() {
+		// TODO Auto-generated method stub
+		
+		
 		panel_filtre.add(combobox_annee);
 		panel_filtre.add(combobox_sexe);
 		panel_filtre.add(combobox_type_course);
+
 		
+		tableau = this.genererTableau();
+
+		panel_content.setLayout(new BorderLayout());
+		panel_content.add(panel_filtre,BorderLayout.NORTH);
+		panel_content.add(new JScrollPane(tableau),BorderLayout.CENTER);
+		
+		//Affiche les element du boerder latour global
+		super.afficheBorderElement();
+		
+	}
+	
+	private JTable genererTableau() {
+		DefaultTableCellRenderer[] list_rend = new DefaultTableCellRenderer[] {
+				rendererTable(JLabel.CENTER),
+				rendererTable(JLabel.LEFT),
+				rendererTable(JLabel.CENTER),
+				rendererTable(JLabel.RIGHT)
+			};
 		
 		Object[][] donnees = {
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
+				{"1.", "J.BOE", ' ', 756},
+				{"2.", "M.FOURCADE", ' ', 720},
+				{"3.", "Q.FILLON MAILLET", ' ', 630},
+				{"1.", "J.BOE", ' ', 756},
+				{"2.", "M.FOURCADE", ' ', 720},
 				{"3", "Q.FILLON MAILLET", ' ', 630},
 				{"1", "J.BOE", ' ', 756},
 				{"2", "M.FOURCADE", ' ', 720},
@@ -85,56 +125,22 @@ public class GestionClassement extends InterfaceGraphique {
 				{"3", "Q.FILLON MAILLET", ' ', 630},
 		};
 
-		String[] entetes = {"Classement", "Biathlete","Nat", "Points"};		
-		tableau = new JTable(donnees, entetes);
-		/*DefaultTableCellRenderer test = new DefaultTableCellRenderer();
-		test.setFont(new Font("calibri", Font.BOLD, 20));
-		test.setIcon(new ImageIcon(getClass().getResource("/images/drapeau/allemagne.png")));
+		String[] entetes = {"Cls", "Biathlete","Nat", "Pts"};		
+		JTable return_table = new JTableUnmodifiable(
+				donnees,
+				entetes,
+				new Font("calibri", Font.BOLD, 25),
+				new Font("calibri", Font.PLAIN, 25),
+				40,
+				new int[] {10,900,10,10},
+				false,
+				true, 
+				null,
+				list_rend
+				);
 		
-	
-		tableau.getColumnModel().getColumn(2).setCellRenderer(test);
-		*/
-		//Font de l'entete
-		tableau.getTableHeader().setFont(new Font("calibri", Font.BOLD, 25));
-		//Font du contenue
-		tableau.setFont(new Font("calibri", Font.PLAIN, 20));
-		//Couleur du texte
-		tableau.setForeground(tableau_txt_color);
-		
-		//Hauteur des cellules
-		tableau.setRowHeight(30);
-		//Largeur de la colonne 0
-		
-		
-		tableau.getColumnModel().getColumn(0).setWidth(20);
-		//tableau.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
-		//tableau.setGridColor(new Color(34,42,53));
-		tableau.setGridColor(tableau_grid_color);
-		//tableau.setBackground(new Color(34,42,53));
-		tableau.setBackground(tableau_bg_color);
-		
-		
-		//	this.setBackground(tableau_bg_color);
-		/*
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.gridy = 3;
-		*/
-		
-		this.setLayout(new BorderLayout());
-		this.add(panel_filtre,BorderLayout.NORTH);
-		/*
-		gbc.gridx = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 15;
-		gbc.gridy = 4;
-		*/
-		//panel_content.setLayout(new FlowLayout(FlowLayout.CENTER, 20 , 20));
-		//panel_content.setLayout(new FlowLayout(FlowLayout.CENTER));
-		//panel_content.add(new JScrollPane(tableau));
-		this.add(new JScrollPane(tableau),BorderLayout.CENTER);
+		return return_table;
 	}
-	
-	
+
+
 }

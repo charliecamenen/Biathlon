@@ -37,9 +37,22 @@ public class InterfaceGraphique extends JPanel implements Runnable {
 	protected JPanel panel_est;
 	protected JPanel panel_ouest;
 	protected JPanel panel_content;
-	protected Color combobox_bg_color = new Color(255,255,255);
-	protected Color gris_transparent = new Color(41,41,41,180);
+	//Couleur prédéfinies
+	//Couleur de bg des combobox
+	protected Color color_combobox_bg = new Color(255,255,255);
+	//Couleur gris transparent
+	protected Color color_gris_transparent = new Color(41,41,41,150);
+	//Couleur des boutons
 	protected Color color_button = new Color(206,233,236);
+	//Couleur de la police
+	protected Color color_font = new Color(255,255,255);
+	//Couleur transparante
+	protected Color color_transparent = new Color(0,0,0,0);
+	//Couleur des bg de tableau
+	protected Color color_tableau_bg = new Color(0,80,150);
+	
+	//Couleur des bg de tableau 2
+	protected Color color_tableau_bg_second = new Color(  252, 180, 20  );
 	
 	protected Color color_bg;
 	protected ImageIcon ico_logo;
@@ -57,7 +70,7 @@ public class InterfaceGraphique extends JPanel implements Runnable {
 			image_background = ico.getImage();
 		}
 		
-		combobox_bg_color = new Color(255,255,255);
+		color_combobox_bg = new Color(255,255,255);
 		color_bg = new Color(40,40,40);
 
 		this.setBackground(color_bg);
@@ -266,21 +279,21 @@ public class InterfaceGraphique extends JPanel implements Runnable {
 		return panel;
 	}
 
-	protected JPanel panelStyle(JPanel panel) {
+	protected JPanel panelStyle(JPanel panel,Color color_bg,Color color_border ) {
 		panel.setBackground(color_bg);
-		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
+		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, color_border));
 		return panel;
 	}
 
 	protected JPanel panelTransparentStyle(JPanel panel) {
-		panel.setBackground(this.gris_transparent);
+		panel.setBackground(this.color_gris_transparent);
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
 		return panel;
 	}
 
 	protected JPanel panelBorderStyle(JPanel panel) {
 		panel.setOpaque(false);
-		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
+		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
 		return panel;
 	}
 	protected JTextField textFieldStyle(JTextField textfield) {
@@ -299,20 +312,23 @@ public class InterfaceGraphique extends JPanel implements Runnable {
 		label.setForeground(new Color(255,255,255));
 		return label;
 	}
-
-	protected JLabel sousTitreLabelStyle(JLabel label) {
-		//label.setPreferredSize(new Dimension(200, 35));
-		label.setFont(new Font("calibri", Font.BOLD, 25));
-		label.setForeground(new Color(255,255,255));
-		return label;
-	}
-
+	
 	protected JLabel labelStyle(JLabel label) {
-		//label.setPreferredSize(new Dimension(200, 35));
 		label.setFont(new Font("calibri", Font.BOLD, 25));
-		label.setForeground(new Color(255,255,255));
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setForeground(color_font);
 		return label;
 	}
+
+	protected JLabel labelStyle(JLabel label, int taille_police, int alignement,Color color_fg ) {
+		label.setFont(new Font("calibri", Font.BOLD, taille_police));
+		if (alignement != 0) label.setHorizontalAlignment(alignement);
+		else label.setHorizontalAlignment(SwingConstants.CENTER);
+		if (color_fg != null)label.setForeground(color_fg);
+		else label.setForeground(color_font);
+		return label;
+	}
+
 
 	protected JComboBox<String> comboboxStyle(JComboBox<String> combobox) {
 		combobox.setPreferredSize(new Dimension(180, 35));
@@ -364,19 +380,19 @@ public class InterfaceGraphique extends JPanel implements Runnable {
 	}
 
 	protected JTextArea textAreaStyle(JTextArea textArea) {
-		textArea.setBackground(gris_transparent);
+		textArea.setBackground(color_gris_transparent);
 		textArea.setForeground(Color.WHITE);
 		textArea.setEditable(false);
 		textArea.setFont(new Font("calibri", Font.BOLD, 15));
 		return textArea;
 	}
 	
-	protected JScrollPane scrollPaneStyle(JScrollPane scrollPane) {
-		scrollPane.setBackground(gris_transparent);
-		scrollPane.setOpaque(false);
+	protected JScrollPane scrollPaneStyle(JScrollPane scrollPane, Color bg_color, boolean opaque) {
+		if(bg_color !=null)scrollPane.setBackground(bg_color);
+		else scrollPane.setBackground(color_transparent);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		 //Code To make transparent
 		scrollPane.getViewport().setOpaque(false);
-		
 		return scrollPane;
 	}
 	

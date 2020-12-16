@@ -256,6 +256,7 @@ public class Scene extends InterfaceGraphique {
 		int dist_cible_but;
 		int decalage;
 		//Si on avance vers l'avant
+		
 		if(list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette() < 500) {
 
 			dist_cible_but = 500-list_performances_courrant.get(this.pos_vue_biathlete_courrant).getPhysique().getX_silhouette();

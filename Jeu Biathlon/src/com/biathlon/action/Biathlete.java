@@ -12,11 +12,16 @@ public class Biathlete {
 	private String prenom;
 	private String libelle;
 	private int id_equipe;
-	//private String libelle_equipe;
 	private int age;
 	private String sexe;
 	private String statut;
-	private int point;
+	/*
+	 * Différents statut
+	 * Joueur
+	 * Actif
+	 * retiaité
+	 * regen
+	 */
 	private int end;
 	private int acc;
 	private int cou;
@@ -25,34 +30,20 @@ public class Biathlete {
 	private int ski;
 	private int rec;
 	private int reg;
-	
 	private int pot;
 	private int ren;
 	
 	public Biathlete(int id, String nom, String prenom, String libelle, int id_equipe, int age,
-			String sexe, String statut,int point, int end, int acc, int cou, int deb , int vit, int ski, int rec, int reg, int pot, int ren) {
-		super();
-		ResultSet resultat = Main.database.requete("select * from biathletes where id_biathlete =  " + id);
-		//System.out.println("select * from Biathlete where id_biathlete = " + id);
-		try {
-			while(resultat.next()) {
-				//System.out.println(resultat.getString("nom_biathlete"));
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+			String sexe, String statut, int end, int acc, int cou, int deb , int vit, int ski, int rec, int reg, int pot, int ren) {
+		super();	
 		this.id = id;
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 		this.prenom = prenom;
-		this.libelle = libelle;
+		//this.libelle = libelle;
 		this.id_equipe = id_equipe;
-		//this.libelle_equipe = libelle_equipe;
 		this.age = age;
 		this.sexe = sexe;
 		this.statut = statut;
-		this.point =point;
 		this.end = end;
 		this.acc = acc;
 		this.cou = cou;
@@ -64,7 +55,72 @@ public class Biathlete {
 		this.pot = pot;
 		this.ren = ren;
 	}
+	
+	public Biathlete(String nom, String prenom, int id_equipe,String sexe) {
+		super();	
+		this.nom = nom.toUpperCase();
+		this.prenom = prenom;
+		this.id_equipe = id_equipe;
+		this.sexe = sexe;
+	}
+	
+	public Biathlete(int id) {
+		super();
+		ResultSet resultat = Main.database.requete("select * from biathletes where id_biathlete =  " + id);
+		
+		try {while(resultat.next()) {
+			this.nom = resultat.getString("nom_biathlete");
+			this.prenom = resultat.getString("prenom_biathlete");
+			this.libelle = resultat.getString("libelle_biathlete");
+			this.id_equipe = resultat.getInt("id_equipe");
+			this.age = resultat.getInt("annee_biathlete");
+			this.sexe = resultat.getString("sexe_biathlete");
+			this.statut = resultat.getString("statut_biathlete");
+			this.end = resultat.getInt("END");
+			this.acc = resultat.getInt("ACC");
+			this.cou = resultat.getInt("COU");
+			this.deb = resultat.getInt("DEB");
+			this.vit = resultat.getInt("VIT");
+			this.ski = resultat.getInt("SKI");
+			this.rec = resultat.getInt("REC");
+			this.reg = resultat.getInt("REG");
+			this.pot = resultat.getInt("POT");
+			this.ren = resultat.getInt("REN");
+			}
+		} catch (SQLException e) {e.printStackTrace();}
+		
+		this.id = id;
+		
+	}
 
+	public void createAleaRegen(String spe, String site_fav) {
+		
+		
+		this.age = (int) Math.round((float) 20 + ((Math.random()*4 )- 2 ));
+		this.statut = "creation";	
+		this.end = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.acc = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.cou = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.deb = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.vit = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.ski = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.rec = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.reg = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.pot = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+		this.ren = (int) Math.round((float) 70 + ((Math.random()*10 )- 5 ));
+
+		
+	}
+	
+	
+	public String getLibelle() {
+		if(prenom.length() > 0 && nom.length() >0) {
+			return this.prenom.substring(0,1) + "." + this.nom;
+		}else {
+			return "";
+		}
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -87,14 +143,6 @@ public class Biathlete {
 
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
-	}
-
-	public String getLibelle() {
-		return libelle;
-	}
-
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
 	}
 
 	public int getId_equipe() {
@@ -146,13 +194,6 @@ public class Biathlete {
 	}
 
 
-	public int getPoint() {
-		return point;
-	}
-
-	public void setPoint(int point) {
-		this.point = point;
-	}
 
 	public int getCou() {
 		return cou;

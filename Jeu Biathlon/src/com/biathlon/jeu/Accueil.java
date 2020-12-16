@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -35,6 +36,7 @@ public class Accueil extends InterfaceGraphique{
 	private JButton button_quitter;
 	private JButton button_paraletres;
 
+	private ArrayList<Joueur> list_parties_joueurs;
 	private JList liste_parties;
 	private ImageIcon ico_bg_boutton_panel;
 
@@ -50,9 +52,10 @@ public class Accueil extends InterfaceGraphique{
 		super("/images/background/novemesto.png");
 
 		//Charge la liste des parties existanntes
+		list_parties_joueurs = this.genererListJoueur();
+		//Les integrer dans le Jlist
 		liste_parties = this.creerListeParties();
-		
-		
+
 		//Element de la page
 		label_titre = titreLabelStyle(new JLabel("Menu Principal"));
 		label_titre.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -62,14 +65,14 @@ public class Accueil extends InterfaceGraphique{
 		button_charger_carriere =  headerButtonStyle(new JButton("CHARGER CARRIERE"));
 		button_quitter =  mediumButtonStyle(new JButton("Quitter"));
 		button_paraletres = mediumButtonStyle(new JButton("Paramètres"));
-		
+
 		//panel principaux du borderLayout
 		panel_content = panelSansBgStyle(new InterfaceGraphique("/images/accueil/bg_bouton_panel.png"));
 		panel_footer = panelSansBgStyle(new JPanel());
 		panel_header = panelSansBgStyle(new JPanel());
 		panel_est = panelSansBgStyle(new JPanel());
 		panel_ouest = panelSansBgStyle(new JPanel());
-		
+
 		//panel_list_parties= panelSansBgStyle(new JPanel());
 		panel_content_course = panelSansBgStyle(new InterfaceGraphique("/images/accueil/bg_bouton.png"));
 		panel_content_nouvelle_carriere = panelSansBgStyle(new InterfaceGraphique("/images/accueil/bg_bouton.png"));
@@ -78,9 +81,9 @@ public class Accueil extends InterfaceGraphique{
 		panel_content_quitter_parametres = panelSansBgStyle(new JPanel());
 		panel_quitter = panelSansBgStyle(new InterfaceGraphique("/images/accueil/bg_bouton_petit.png"));
 		panel_parametres  = panelSansBgStyle(new InterfaceGraphique("/images/accueil/bg_bouton_petit.png"));
-		
+
 		this.setDimensionOfBorderElement(290, 100, 530, 530);
-		
+
 		//panel_list_parties.add(this.listStyle(liste_parties));	
 		panel_content_course.add(button_course);
 		panel_content_nouvelle_carriere.add(button_nouvelle_carriere);
@@ -91,9 +94,9 @@ public class Accueil extends InterfaceGraphique{
 		panel_content_quitter_parametres.setLayout(new GridLayout(1,2));
 		panel_content_quitter_parametres.add(panel_quitter);
 		panel_content_quitter_parametres.add(panel_parametres);
-		
+
 		this.setLayout(new FlowLayout(FlowLayout.LEADING, 30,10));
-		
+
 		panel_content.setLayout(new GridBagLayout());
 		panel_content.add(label_titre,gbc(0,0,1,1,0,0,null,0));
 		panel_content.add(panel_content_course,gbc(1,0,1,1,0,0,null,0));
@@ -107,7 +110,7 @@ public class Accueil extends InterfaceGraphique{
 
 		//panel_footer.setLayout(new FlowLayout(FlowLayout.LEFT));
 		//panel_footer.add(button_quitter);
-	
+
 		this.afficheBorderElement();
 
 		button_nouvelle_carriere.addActionListener(new ActionListener() {
@@ -119,12 +122,17 @@ public class Accueil extends InterfaceGraphique{
 
 		button_charger_carriere.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				Gestion gestion = new Gestion();
-				actuFenetre(gestion);
+				//Si une carriere est sélectionné
+				if(liste_parties.getSelectedIndex() != -1){
+					//On charge le joueur de la carriere en question grace a la selection du listBox
+					Main.joueur = new Joueur(list_parties_joueurs.get(liste_parties.getSelectedIndex()).getId_joueur());
+					Gestion gestion = new Gestion();
+					actuFenetre(gestion);
+				}
 			}
 		});
 
-		
+
 		button_course.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				Main.joueur = new Joueur("course");
@@ -143,29 +151,34 @@ public class Accueil extends InterfaceGraphique{
 	}
 
 
+	public ArrayList<Joueur> genererListJoueur() {
+		ArrayList<Joueur> list_joueur = new ArrayList<>();
 
+		// Résultat de la rquete sur les parties existantes
+		ResultSet resultat = Main.database.requete("Select * from Joueurs");
+		try {
+			while(resultat.next()) {
+				//Joueur correspondant a l'ID
+				Joueur joueur = new Joueur(resultat.getInt("id_joueur"));
+
+				list_joueur.add(joueur);
+
+			}
+		} catch (SQLException e) {e.printStackTrace();}
+
+		return list_joueur;
+	}
 
 	public JList creerListeParties() {
 
 		//Vecteur a remplir lors de la requette
 		Vector element_list = new Vector();
 
-		// Résultat de la rquete sur les parties existantes
-		ResultSet resultat = Main.database.requete("Select * from Joueur");
-		element_list.add("Carriere 2               TESTTTT");
-		element_list.add("Carriere 2               TESTTTT");
-		element_list.add("Carriere 2               TESTTTT");
-		element_list.add("Carriere 2               TESTTTT");
-		try {
-			while(resultat.next()) {
-				//Remplire le vecteur de partie a charger
-				element_list.add(resultat.getString("nom_joueur") + " - " + resultat.getInt("annee") + " ( M.Fourcade - C.Aymonier ) " + "      16/11/2020");
-
-			}
-		} catch (SQLException e) {e.printStackTrace();}
-
+		for(int i = 0 ; i <list_parties_joueurs.size(); i++) {
+			//Remplire le vecteur de partie a charger
+			element_list.add(list_parties_joueurs.get(i).description());
+		}
 		return new JList(element_list);
-
 	}
 
 

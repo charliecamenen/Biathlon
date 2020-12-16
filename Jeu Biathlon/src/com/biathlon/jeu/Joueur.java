@@ -16,60 +16,134 @@ import com.biathlon.courses.Poursuite;
 import com.biathlon.courses.Relais;
 
 public class Joueur {
-	
+
 	//La course auquel le joueur paricipe
 	private Course course;
 	
+	//id de la course courrante
+	public int id_course_courrante;
+
 	//La cible sur laquelle le joueur va tirer
 	public static CibleJoueur cible_joueur;
-	
+
 	//Type de jeu
 	private String type_jeu;
-	
+
 	//PROVISOIRE JE PENSES
 	//Es ce qu'il y a une poursuite apres le sprint ? 
 	private boolean faire_poursuite = false;
-	
+
 	//Mon biathlete actuel
 	public static int id_biathlete;
 	private ArrayList<Integer> list_id_biathlete;
 
 	//Type de course 
 	private int type_course;
-	
+
 	//Id d'equipe de l'athlete
-	private String id_equipe;
-	
+	private int id_equipe;
+
 	//Sexe de l'athlete
 	private String sexe;
-	
+
 	//Fond d'écran image
 	private ImageIcon ico_bg;
 	private Image img_bg;
-	
+
 	//Competition courrante
 	private ResultSet compet_courrante;
-	
+
 	//Compteur d'iteration de performance avant de blanchir la cible
 	private int compteurBlanchirCible = 0 ;
-	
+
+	private String nom_joueur;
+
+	private String id_biathlete_homme;
+
+	private String id_biathlete_femme;
+
+	private int annee;
+
+	private int id_joueur;
+
+	private int id_date_courrante;
+
 	public Joueur(String type_jeu) {
 		this.type_jeu = type_jeu;
 	}
+
+	public Joueur(int id_joueur) {
+		ResultSet resultat = Main.database.requete("select * from joueurs where id_joueur =  " + id_joueur);
+
+		try {while(resultat.next()) {
+			this.nom_joueur = resultat.getString("nom_joueur");
+			this.id_equipe = resultat.getInt("id_equipe");
+			this.id_biathlete_homme = resultat.getString("id_biathlete_homme");
+			this.id_biathlete_femme = resultat.getString("id_biathlete_femme");
+			this.id_date_courrante = resultat.getInt("id_date");
+			this.annee = resultat.getInt("annee");
+		}
+		} catch (SQLException e) {e.printStackTrace();}
+
+		this.id_joueur = id_joueur;
+
+	}
 	
+	public void simulationCourse() {
+		
+		//cette action sera effectué dans la table performance au fur et a mesure que l'athlete a terminé
+		//Pour els relays on précisera les fautes de chaques biathlete
+		//Boucle sur les biathletes ou equipes arrivés (MAj des temps dans participants et des fautes dans Membres)
+		
+		//Cherche les participants de la course a executer pour simuler
+		ResultSet select_participants = Main.database.requete(""
+				+ "SELECT * "
+				+ "FROM participants "
+				+ "WHERE id_course = "+ Main.joueur.getId_course_courrante()
+				);
+
+		//On parcour les participanrs de la course*****
+		try {while(select_participants.next()) {
+			//Selectionne les membres qui corresponde a l'id participants
+			ResultSet select_membres = Main.database.requete(""
+					+ "SELECT * "
+					+ "FROM participants "
+					+ "WHERE id_course = " + select_participants.getInt("id_participant")
+					);
+			try {while(select_membres.next()) {
+				
+				//Simulation des 3 parametres avec les notes du biathlete
+				
+				
+				//On appel la fonction qui calcul les classement et les baremes
+				Main.database.courseTermineBiathlete(
+						select_membres.getInt("id_participant"),
+						select_membres.getInt("id_biathlete"),
+						1000000,
+						0,
+						2
+						);
+			}} catch (SQLException ex) {ex.printStackTrace();}
+		}} catch (SQLException ex) {ex.printStackTrace();}
+		
+		//Maj des classements et baremes dans participants
+		Main.database.updateParticipationCourseTermine(Main.joueur.getId_course_courrante());
+	}
+
+	/*A vérifier et a modifier */
 	//Course simple : individuelles
 	public void monBiathleteIndiv(int id_biathlete) {
 		//On met le meme au mec et a la meuf
 		this.id_biathlete = id_biathlete;
 	}
-	
+
 	//Course simple equipe
 	public void mesBiathleteEquipe(ArrayList<Integer> list_id_biathlete) {
 		this.list_id_biathlete = list_id_biathlete;
 	}
-	
-	
-	
+
+
+
 	public void setLieu(String lieu_compet) {
 		//On met a jour la competition courrante
 		compet_courrante = Main.database.requete("SELECT * FROM competitions where lieu_compet = '" + lieu_compet + "'");
@@ -78,24 +152,65 @@ public class Joueur {
 			while(compet_courrante.next()) {
 				this.actuBg(compet_courrante.getString("background_file"));
 			}
-			
+
 		} catch (SQLException e) {e.printStackTrace();}
 	}
-	
-	
+
+
 
 	public void actuBg(String bg_file) {
 		//Creation de l'image de fond d'ecran
 		ico_bg = new ImageIcon(getClass().getResource(bg_file));
 		this.img_bg = this.ico_bg.getImage();
 	}
+
+	public String nomMonBiathleteFemme() {
+		//Requete sur l'id femme
+		ResultSet result_femme = Main.database.requete("SELECT * FROM biathletes where id_biathlete = " + this.id_biathlete_femme);
+		//init le nom
+		String nom_femme = "";
+		//On cherche le nom de femme
+		try {while(result_femme.next()) {
+			nom_femme = result_femme.getString("libelle_biathlete");
+		}} catch (SQLException e) {e.printStackTrace();}
+		//on cherche le nom d'homme
+		return nom_femme;
+	}
 	
-	
-	
+	public String nomMonBiathletehomme() {
+		//Requete sur l'id homme
+		ResultSet result_homme = Main.database.requete("SELECT * FROM biathletes where id_biathlete = " + this.id_biathlete_homme);
+		//init le nom
+		String nom_homme = "";
+		//On cherche le nom de homme
+		try {while(result_homme.next()) {
+			nom_homme = result_homme.getString("libelle_biathlete");
+		}} catch (SQLException e) {e.printStackTrace();}
+		//on cherche le nom d'homme
+		return nom_homme;
+	}
+
+	public String description() {
+		
+
+		return this.nom_joueur + " : " + this.nomMonBiathletehomme() + " - " + this.nomMonBiathleteFemme() + "       " + dateString(this.id_date_courrante) + "/" + this.annee;
+	}
+
 	public static void removeListCacheCible() {
 		cible_joueur.getList_cache_cible().clear();
 	}
 	
+	public String dateString(int id_date_courrante) {
+		ResultSet date = Main.database.requete("SELECT * FROM dates where id_date = " + id_date_courrante);
+
+		//On cherche le nom de homme
+		try {while(date.next()) {
+			return date.getString("jour") + "/" + date.getString("mois");
+		}} catch (SQLException e) {e.printStackTrace();}
+		return "";
+	}
+	
+
 	public void demarrerCourseSimple() {
 		System.out.println(type_course);
 		ResultSet participant;
@@ -106,12 +221,12 @@ public class Joueur {
 		ArrayList<Float> list_km_tir_f;
 		ArrayList<Float> list_km_pointage_f;
 		ArrayList<String> list_type_tir_cd;
-		
+
 		cible_joueur = new CibleJoueur(this.id_biathlete, 220);
-		
+
 		switch(type_course) {
 		case 1:
-			
+
 			//Liste des equipes qui ont au moins 1 femmes et 1 hommes
 			participant = Main.database.requete(""
 					+ "SELECT id_equipe from equipes WHERE id_equipe in "
@@ -122,8 +237,8 @@ public class Joueur {
 					+ "(select id_equipe from biathletes where sexe_biathlete = 'F'"
 					+ " group by biathletes.id_equipe having count(*) > 1) "
 					+ "");
-			
-			
+
+
 			//Pointages intermediaires
 			list_km_pointage_h = new ArrayList<>();
 			list_km_pointage_h.add(new Float(900));
@@ -138,7 +253,7 @@ public class Joueur {
 			list_km_pointage_h.add(new Float(6800));
 			//Arrivée de la course
 			list_km_pointage_h.add(new Float(7500));
-			
+
 			//Pointages intermediaires
 			list_km_pointage_f = new ArrayList<>();
 			list_km_pointage_f.add(new Float(700));
@@ -153,8 +268,8 @@ public class Joueur {
 			list_km_pointage_f.add(new Float(5400));
 			//Arrivée de la course
 			list_km_pointage_f.add(new Float(6000));
-			
-			
+
+
 			//2 tirs
 			list_km_tir_h = new ArrayList<>();
 			list_km_tir_h.add(new Float(2500));
@@ -163,20 +278,20 @@ public class Joueur {
 			list_km_tir_f = new ArrayList<>();
 			list_km_tir_f.add(new Float(2000));
 			list_km_tir_f.add(new Float(4000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
-			
+
+
 			course = new Relais(participant, list_km_tir_h, list_km_tir_f,list_km_pointage_h,list_km_pointage_f ,list_type_tir_cd, 2);
 			course.demarrer();
-			
+
 			break;//relais mixte
-			
+
 		case 2:
-			
+
 			//Liste des equipes qui ont au moins 2 femmes et deux hommes
 			participant = Main.database.requete(""
 					+ "SELECT id_equipe from equipes WHERE id_equipe in "
@@ -187,7 +302,7 @@ public class Joueur {
 					+ "(select id_equipe from biathletes where sexe_biathlete = 'F'"
 					+ " group by biathletes.id_equipe having count(*) > 0) "
 					+ "");
-			
+
 			//Pointages intermediaires
 			list_km_pointage_h = new ArrayList<>();
 			list_km_pointage_h.add(new Float(900));
@@ -202,7 +317,7 @@ public class Joueur {
 			list_km_pointage_h.add(new Float(6800));
 			//Arrivée de la course
 			list_km_pointage_h.add(new Float(7500));
-			
+
 			//Pointages intermediaires
 			list_km_pointage_f = new ArrayList<>();
 			list_km_pointage_f.add(new Float(700));
@@ -217,8 +332,8 @@ public class Joueur {
 			list_km_pointage_f.add(new Float(5400));
 			//Arrivée de la course
 			list_km_pointage_f.add(new Float(6000));
-			
-			
+
+
 			//2 tirs
 			list_km_tir_h = new ArrayList<>();
 			list_km_tir_h.add(new Float(2500));
@@ -227,25 +342,25 @@ public class Joueur {
 			list_km_tir_f = new ArrayList<>();
 			list_km_tir_f.add(new Float(2000));
 			list_km_tir_f.add(new Float(4000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new Relais(participant, list_km_tir_h, list_km_tir_f,list_km_pointage_h,list_km_pointage_f ,list_type_tir_cd, 1);
-			
+
 			course.demarrer();
-			
+
 			break;//relais mixte simple
-		
-		
-			
+
+
+
 		case 3: //relais homme
-			
+
 			//Identifiant d'equipes qui compte au moins 4 hommes
 			participant = Main.database.requete("select id_equipe, count(*) as cpt from biathletes where sexe_biathlete = 'H' group by biathletes.id_equipe having cpt > 3 ");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(900));
@@ -260,29 +375,29 @@ public class Joueur {
 			list_km_pointage.add(new Float(6800));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(7500));
-			
+
 			//2 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(2500));
 			list_km_tir.add(new Float(5000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new Relais(participant, list_km_tir, list_km_pointage, list_type_tir_cd,4, "H");
 			course.demarrer();
 			break;
-		
-		
-		
-		
+
+
+
+
 		case 4: //relais femme
-			
+
 			//Identifiant d'equipes qui compte au moins 4 femmes
 			participant = Main.database.requete("select id_equipe, count(*) as cpt from biathletes where sexe_biathlete = 'F' group by biathletes.id_equipe having cpt > 3 ");
-					
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(700));
@@ -297,28 +412,28 @@ public class Joueur {
 			list_km_pointage.add(new Float(5400));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(6000));
-			
+
 			//2 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(2000));
 			list_km_tir.add(new Float(4000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new Relais(participant, list_km_tir, list_km_pointage,list_type_tir_cd,  4, "H");
 			course.demarrer();
-			
+
 			break;
-		
-			
+
+
 		case 5: //sprint homme
 
 			// requete sur les biathletes
 			participant = Main.database.requete("SELECT biathletes.* FROM biathletes where sexe_biathlete = 'H'");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(1200));
@@ -334,28 +449,28 @@ public class Joueur {
 			list_km_pointage.add(new Float(9200));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(10000));
-			
+
 			//2 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(3200));
 			list_km_tir.add(new Float(6600));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new ContreLaMontre(participant, list_km_tir, list_km_pointage,list_type_tir_cd, "tour");
-			
+
 			//Démarrer la course
 			course.demarrer();
 			break;
-			
+
 		case 6: //sprint femme
 
 			// requete sur les biathletes
 			participant = Main.database.requete("SELECT biathletes.* FROM biathletes where sexe_biathlete = 'F'");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(900));
@@ -371,23 +486,23 @@ public class Joueur {
 			list_km_pointage.add(new Float(7100));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(7500));
-			
+
 			//2 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(2500));
 			list_km_tir.add(new Float(5000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new ContreLaMontre(participant, list_km_tir, list_km_pointage,list_type_tir_cd, "tour");
-		
+
 			//Démarrer la course
 			course.demarrer();
 			break;
-			
+
 		case 7: //poursuite homme
 			// requete sur les biathletes
 			participant = Main.database.requete("");
@@ -414,33 +529,33 @@ public class Joueur {
 			list_km_pointage.add(new Float(11700));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(12500));
-			
+
 			//4 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(2500));
 			list_km_tir.add(new Float(5000));
 			list_km_tir.add(new Float(7500));
 			list_km_tir.add(new Float(10000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
 			list_type_tir_cd.add("debout");
-			
+
 			//ON lance la course
 			course = new Poursuite(participant, list_km_tir, list_km_pointage,list_type_tir_cd);
-			
+
 			//Démarrer la course
 			course.demarrer();
 
 			break;
-			
+
 		case 8: //poursuite femme
 			//requete sur les biathletes
 			participant = Main.database.requete("");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(800));
@@ -463,30 +578,30 @@ public class Joueur {
 			list_km_pointage.add(new Float(9600));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(10000));
-			
+
 			//4 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(2000));
 			list_km_tir.add(new Float(4000));
 			list_km_tir.add(new Float(6000));
 			list_km_tir.add(new Float(8000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
 			list_type_tir_cd.add("debout");
-			
+
 			//ON créé la course
 			course = new Poursuite(participant, list_km_tir, list_km_pointage,list_type_tir_cd);
-			
+
 			//Démarrer la course
 			course.demarrer();
 			break;
-			
+
 		case 9: //mass start homme
-			
+
 			//requete sur les biathletes
 			participant = Main.database.requete("SELECT * FROM biathletes where biathletes.sexe_biathlete = 'H' order by biathletes.REN DESC LIMIT 30");
 			//Pointages intermediaires
@@ -511,33 +626,33 @@ public class Joueur {
 			list_km_pointage.add(new Float(14000));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(15000));
-			
+
 			//4 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(3000));
 			list_km_tir.add(new Float(6000));
 			list_km_tir.add(new Float(9000));
 			list_km_tir.add(new Float(12000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
 			list_type_tir_cd.add("debout");
-			
+
 			//On créé la course
 			course = new MassStart(participant, list_km_tir, list_km_pointage,list_type_tir_cd);
-			
+
 			//Démarrer la course
 			course.demarrer();
 			break;
-		
+
 		case 10:  //mass start femme
-			
+
 			//requete sur les biathletes
 			participant = Main.database.requete("SELECT * FROM biathletes where biathletes.sexe_biathlete = 'F' order by biathletes.REN DESC LIMIT 30");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(900));
@@ -560,31 +675,31 @@ public class Joueur {
 			list_km_pointage.add(new Float(11700));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(12500));
-			
+
 			//4 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(2500));
 			list_km_tir.add(new Float(5000));
 			list_km_tir.add(new Float(7500));
 			list_km_tir.add(new Float(10000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new MassStart(participant, list_km_tir, list_km_pointage,list_type_tir_cd);
 			//Démarrer la course
 			course.demarrer();
 			break;
-		
+
 		case 11: //individuel homme
-			
+
 			// Tout les biathletes masculin
 			participant = Main.database.requete("SELECT biathletes.* FROM biathletes where sexe_biathlete = 'H' ");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(1600));
@@ -607,32 +722,32 @@ public class Joueur {
 			list_km_pointage.add(new Float(19200));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(20000));
-			
+
 			//4 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(4000));
 			list_km_tir.add(new Float(8000));
 			list_km_tir.add(new Float(12000));
 			list_km_tir.add(new Float(16000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			//Création de mla course
 			course = new ContreLaMontre(participant, list_km_tir, list_km_pointage,list_type_tir_cd, "minute");
 			//Démarrer la course
 			course.demarrer();
 			break;
-			
+
 		case 12: //individuel femme
-			
+
 			// Tout les biathletes féminin
 			participant = Main.database.requete("SELECT biathletes.* FROM biathletes where sexe_biathlete = 'F' ");
-			
+
 			//Pointages intermediaires
 			list_km_pointage = new ArrayList<>();
 			list_km_pointage.add(new Float(1000));
@@ -655,49 +770,39 @@ public class Joueur {
 			list_km_pointage.add(new Float(14000));
 			//Arrivée de la course
 			list_km_pointage.add(new Float(15000));
-			
+
 			//4 tirs
 			list_km_tir = new ArrayList<>();
 			list_km_tir.add(new Float(3000));
 			list_km_tir.add(new Float(6000));
 			list_km_tir.add(new Float(9000));
 			list_km_tir.add(new Float(12000));
-			
+
 			//Type des tirs
 			list_type_tir_cd = new ArrayList<>();
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
 			list_type_tir_cd.add("couche");
 			list_type_tir_cd.add("debout");
-			
+
 			course = new ContreLaMontre(participant, list_km_tir, list_km_pointage,list_type_tir_cd, "minute");
-			
+
 			//Démarrer la course
 			course.demarrer();
 			break;
 		}
 	}
-	
-	
-	
+
+
+
 	/*
 	//Carriere : 1 homme + 1 femme
 	public void mesBiathleteCarriere(int id_biathlete_h, int id_biathlete_f) {
 		this.id_biathlete_h = id_biathlete_h;
 		this.id_biathlete_f = id_biathlete_f;
 	}
-	*/
-	
-	
-	
-	/*  GET/SET  */
-	public String getId_equipe() {
-		return id_equipe;
-	}
+	 */
 
-	public void setId_equipe(String id_equipe) {
-		this.id_equipe = id_equipe;
-	}
 
 	public String getSexe() {
 		return sexe;
@@ -706,11 +811,11 @@ public class Joueur {
 	public void setSexe(String sexe) {
 		this.sexe = sexe;
 	}
-	
+
 	public void chargerCarriere() {
-		
+
 	}
-	
+
 	public Course getCourse() {
 		return course;
 	}
@@ -761,7 +866,7 @@ public class Joueur {
 
 	public void creerCourse() {
 	}
-	
+
 	public boolean isFaire_poursuite() {
 		return faire_poursuite;
 	}
@@ -781,7 +886,7 @@ public class Joueur {
 	public String getType_jeu() {
 		return type_jeu;
 	}
-	
+
 	public void setType_jeu(String type_jeu) {
 		this.type_jeu = type_jeu;
 	}
@@ -793,5 +898,82 @@ public class Joueur {
 	public void setType_course(int type_course) {
 		this.type_course = type_course;
 	}
+
 	
+	public int getId_course_courrante() {
+		return id_course_courrante;
+	}
+
+	public void setId_course_courrante(int id_course_courrante) {
+		this.id_course_courrante = id_course_courrante;
+	}
+
+	public int getId_equipe() {
+		return id_equipe;
+	}
+
+	public void setId_equipe(int id_equipe) {
+		this.id_equipe = id_equipe;
+	}
+
+	public int getCompteurBlanchirCible() {
+		return compteurBlanchirCible;
+	}
+
+	public void setCompteurBlanchirCible(int compteurBlanchirCible) {
+		this.compteurBlanchirCible = compteurBlanchirCible;
+	}
+
+	public String getNom_joueur() {
+		return nom_joueur;
+	}
+
+	public void setNom_joueur(String nom_joueur) {
+		this.nom_joueur = nom_joueur;
+	}
+
+	public String getId_biathlete_homme() {
+		return id_biathlete_homme;
+	}
+
+	public void setId_biathlete_homme(String id_biathlete_homme) {
+		this.id_biathlete_homme = id_biathlete_homme;
+	}
+
+	public String getId_biathlete_femme() {
+		return id_biathlete_femme;
+	}
+
+	public void setId_biathlete_femme(String id_biathlete_femme) {
+		this.id_biathlete_femme = id_biathlete_femme;
+	}
+
+	public int getAnnee() {
+		return annee;
+	}
+
+	public void setAnnee(int annee) {
+		this.annee = annee;
+	}
+	
+
+	public int getId_joueur() {
+		return id_joueur;
+	}
+
+	public void setId_joueur(int id_joueur) {
+		this.id_joueur = id_joueur;
+	}
+
+	public int getId_date_courrante() {
+		return id_date_courrante;
+	}
+
+	public void setId_date_courrante(int id_date_courrante) {
+		this.id_date_courrante = id_date_courrante;
+	}
+
+
+	
+
 }

@@ -41,6 +41,8 @@ public class Main {
 	public static Performance performance;
 	public static JFrame fenetre;
 	public static Chrono chrono;
+	public static String nom_data_base;
+	public static int init_annee;
 	//Ref de mon ordi
 	public final static int ref_w = 1594;
 	public final static int ref_h = 870;
@@ -48,10 +50,11 @@ public class Main {
 
 	public static void main(String[] args) {
 
-
+		nom_data_base = "jeu_biathlon_test";
+		init_annee = 2020;
 		//Instanciation de la base de donnée
 		database = new SqlBase();
-		
+
 		fenetre = new JFrame("Jeu Biathlon");
 		//Ferme la fenetre si on clique sur la croix
 		fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

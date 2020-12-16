@@ -30,7 +30,26 @@ public class MassStart extends Course implements Runnable {
 			while (participant.next()){
 
 				//constructeur de biathlete
-				Biathlete biathlete = new Biathlete(participant.getInt("id_biathlete"), participant.getString("nom_biathlete"), participant.getString("prenom_biathlete"), participant.getString("libelle_biathlete"), participant.getInt("id_equipe"),participant.getInt("age_biathlete"),participant.getString("sexe_biathlete"),participant.getString("statut_biathlete"),participant.getInt("point_biathlete"), participant.getInt("END"), participant.getInt("ACC"),participant.getInt("COU"), participant.getInt("DEB") ,participant.getInt("VIT"),participant.getInt("SKI"),participant.getInt("REC"),participant.getInt("REG"),participant.getInt("POT"),participant.getInt("REN"));
+				Biathlete biathlete = new Biathlete(
+						participant.getInt("id_biathlete"),
+						participant.getString("nom_biathlete"),
+						participant.getString("prenom_biathlete"),
+						participant.getString("libelle_biathlete"),
+						participant.getInt("id_equipe"),
+						participant.getInt("annee_biathlete"),
+						participant.getString("sexe_biathlete"),
+						participant.getString("statut_biathlete"),
+						participant.getInt("END"),
+						participant.getInt("ACC"),
+						participant.getInt("COU"), 
+						participant.getInt("DEB"),
+						participant.getInt("VIT"),
+						participant.getInt("SKI"),
+						participant.getInt("REC"),
+						participant.getInt("REG"),
+						participant.getInt("POT"),
+						participant.getInt("REN")
+					);
 
 				//Création de l'objet performance
 				Performance performance = new Performance(biathlete, "classique", "tour",list_km_tir,list_km_pointage, this.list_type_tir_cd, this.vitesse_jeu);

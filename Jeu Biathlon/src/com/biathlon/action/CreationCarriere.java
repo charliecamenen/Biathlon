@@ -42,6 +42,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileView;
 
 import com.biathlon.jeu.Accueil;
+import com.biathlon.jeu.Joueur;
 import com.biathlon.jeu.Main;
 
 public class CreationCarriere extends InterfaceGraphique {
@@ -88,7 +89,7 @@ public class CreationCarriere extends InterfaceGraphique {
 	private JPanel panel_pays_droite;	
 	private JLabel label_pays_image;
 	private JButton button_alea;
-	
+
 	//homme
 	private JLabel label_homme_titre;
 	private JLabel label_homme_nom;
@@ -148,6 +149,7 @@ public class CreationCarriere extends InterfaceGraphique {
 		//On ajoute les objets a leur panel
 		this.afficheBorderElement();
 
+		//Mettre le contenue dans une fonction
 		button_homme_photo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				//Fenetre de choix d'image
@@ -166,30 +168,30 @@ public class CreationCarriere extends InterfaceGraphique {
 				if (dialogue.showOpenDialog(null)== JFileChooser.APPROVE_OPTION) {
 					//On réccupere le chemin
 					fichier_path = dialogue.getSelectedFile().getPath();
-					
-			//		System.out.println(fichier_path);
+
+					//		System.out.println(fichier_path);
 					try {
 						//On print le chemin
 						sortie = new PrintWriter(new FileWriter(fichier_path, true));
-						
+
 						//Image chargé
 						ImageIcon image_charge = new ImageIcon(fichier_path);
-						
+
 						//Ajoute l'image a la liste 
 						list_ico_homme_photo.add(image_charge);
-						
+
 						//On la converti en BufferImage
 						BufferedImage bi = ImageIO.read(new File(fichier_path));
-						
+
 						//On defini le chemin dans lequel enregistrer
 						String path = getClass().getResource("/images/photo/homme/").getPath().replace("%20", " ");
-		
+
 						//Enregistre l'image dans le dossier bin
 						ImageIO.write(bi, "png", new File(path+"/photo"+list_ico_homme_photo.size()+".png"));
 
 						//Mise a jour l'interface panel homme photo
 						ind_photo_homme = list_ico_homme_photo.size()-1;
-						
+
 						//Met a jour l'interface
 						updateInterface(panel_homme_photo,new JLabel( scaleImage(list_ico_homme_photo.get(ind_photo_homme), dim_photo_w,dim_photo_h)) ,0);
 
@@ -219,30 +221,30 @@ public class CreationCarriere extends InterfaceGraphique {
 				if (dialogue.showOpenDialog(null)== JFileChooser.APPROVE_OPTION) {
 					//On réccupere le chemin
 					fichier_path = dialogue.getSelectedFile().getPath();
-					
-			//		System.out.println(fichier_path);
+
+					//		System.out.println(fichier_path);
 					try {
 						//On print le chemin
 						sortie = new PrintWriter(new FileWriter(fichier_path, true));
-						
+
 						//Image chargé
 						ImageIcon image_charge = new ImageIcon(fichier_path);
-						
+
 						//Ajoute l'image a la liste 
 						list_ico_femme_photo.add(image_charge);
-						
+
 						//On la converti en BufferImage
 						BufferedImage bi = ImageIO.read(new File(fichier_path));
-						
+
 						//On defini le chemin dans lequel enregistrer
 						String path = getClass().getResource("/images/photo/femme/").getPath().replace("%20", " ");
-		
+
 						//Enregistre l'image dans le dossier bin
 						ImageIO.write(bi, "png", new File(path+"/photo"+list_ico_femme_photo.size()+".png"));
 
 						//Mise a jour l'interface panel homme photo
 						ind_photo_femme = list_ico_femme_photo.size()-1;
-						
+
 						//Met a jour l'interface
 						updateInterface(panel_femme_photo,new JLabel( scaleImage(list_ico_femme_photo.get(ind_photo_femme), dim_photo_w,dim_photo_h)) ,0);
 
@@ -279,22 +281,60 @@ public class CreationCarriere extends InterfaceGraphique {
 
 		button_alea.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-
-				updateInterface(panel_femme_photo,new JLabel(scaleImage(list_ico_femme_photo.get(updateIndicePhoto("f","+")), dim_photo_w,dim_photo_h)),0);
+				Main.database.initDataBase();
 			}
 		});
-		
+
 		button_retour.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				Accueil acceuil = new Accueil();
 				actuFenetre(acceuil);
 			}
 		});
-		
+
+		//Boutton pour valider la création de la carriere
 		button_valider.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-
-				updateInterface(panel_femme_photo,new JLabel(scaleImage(list_ico_femme_photo.get(updateIndicePhoto("f","+")), dim_photo_w,dim_photo_h)),0);
+				
+				//On créé un joueur dans la db
+				Main.database.creerJoueur();
+				
+				//init l'id joueur
+				int id_j = 1;
+				//Max id pour inserer le nouveau joueur dans la saison
+				ResultSet result_id_max = Main.database.requete("SELECT MAX(id_joueur) AS maxid FROM joueurs");
+				try {while(result_id_max.next()) {
+					//recuperre l'id du joueur créé 
+					id_j = result_id_max.getInt("maxid");
+				}} catch (SQLException e) {e.printStackTrace();}
+				
+				//Créé l'objet joeuur
+				Main.joueur = new Joueur(id_j);
+				
+				//Mon biathlete homme
+				Biathlete mon_biathlete_homme = new Biathlete(textfield_homme_nom.getText(), textfield_homme_prenom.getText(), getEquipeIdCarriere(), "H");
+				//Genere les infos du biathlete
+				mon_biathlete_homme.createAleaRegen(combobox_homme_specialite.getSelectedItem().toString(), combobox_homme_favorite.getSelectedItem().toString());
+				
+				//mon biathlete femme
+				Biathlete mon_biathlete_femme = new Biathlete(textfield_femme_nom.getText(), textfield_femme_prenom.getText(), getEquipeIdCarriere(), "F");
+				//Genere les infos du biathlete
+				mon_biathlete_femme.createAleaRegen(combobox_femme_specialite.getSelectedItem().toString(), combobox_femme_favorite.getSelectedItem().toString());
+				
+				//Initialise la carriere
+				Main.database.initCarrierre(mon_biathlete_homme,mon_biathlete_femme, Main.joueur);
+				
+				
+				//initialise la premiere saison de la carriere
+				Main.database.initPlanningCourse();
+				
+				//Aleatoire des potentiels des biathletes
+				Main.database.initPotentielCarriere(Main.joueur.getId_joueur());
+				
+				//Creation des planning d'entrainement
+				
+				//Mail de début de saison
+				
 			}
 		});
 	}
@@ -306,66 +346,66 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_header = panelSansBgStyle(new JPanel());
 		panel_footer = panelSansBgStyle(new JPanel());
 		//sous panel homme et femme
-		panel_homme_info_photo = new JPanel();
-		panel_femme_info_photo = new JPanel();
+		panel_homme_info_photo = panelSansBgStyle(new JPanel());
+		panel_femme_info_photo = panelSansBgStyle(new JPanel());
 		//sous sous panel homme et femme
-		panel_homme_photo = new JPanel();
-		panel_femme_photo = new JPanel();
-		panel_homme_info = new JPanel();
-		panel_femme_info = new JPanel();
+		panel_homme_photo = panelSansBgStyle(new JPanel());
+		panel_femme_photo = panelSansBgStyle(new JPanel());
+		panel_homme_info = panelSansBgStyle(new JPanel());
+		panel_femme_info = panelSansBgStyle(new JPanel());
 
 		//panel homme
-		panel_homme_nom = new JPanel();
-		panel_homme_prenom = new JPanel();
-		panel_homme_age = new JPanel();
-		panel_homme_specialite = new JPanel();
-		panel_homme_favorite = new JPanel();
-		panel_homme_button_fleche= new JPanel();
-		panel_homme_parcourir_photo= new JPanel();
+		panel_homme_nom = panelSansBgStyle(new JPanel());
+		panel_homme_prenom = panelSansBgStyle(new JPanel());
+		panel_homme_age = panelSansBgStyle(new JPanel());
+		panel_homme_specialite = panelSansBgStyle(new JPanel());
+		panel_homme_favorite = panelSansBgStyle(new JPanel());
+		panel_homme_button_fleche= panelSansBgStyle(new JPanel());
+		panel_homme_parcourir_photo= panelSansBgStyle(new JPanel());
 		//Panel Femme
-		panel_femme_nom = new JPanel();
-		panel_femme_prenom = new JPanel();
-		panel_femme_age = new JPanel();
-		panel_femme_specialite = new JPanel();
-		panel_femme_favorite = new JPanel();
-		panel_femme_button_fleche= new JPanel();
-		panel_femme_parcourir_photo= new JPanel();
+		panel_femme_nom = panelSansBgStyle(new JPanel());
+		panel_femme_prenom = panelSansBgStyle(new JPanel());
+		panel_femme_age = panelSansBgStyle(new JPanel());
+		panel_femme_specialite = panelSansBgStyle(new JPanel());
+		panel_femme_favorite = panelSansBgStyle(new JPanel());
+		panel_femme_button_fleche= panelSansBgStyle(new JPanel());
+		panel_femme_parcourir_photo= panelSansBgStyle(new JPanel());
 
 		//Homme femme
-		panel_homme = new JPanel();
-		panel_femme = new JPanel();
-		
+		panel_homme = panelStyle(new JPanel(),color_gris_transparent,Color.WHITE);
+		panel_femme = panelStyle(new JPanel(),color_gris_transparent,Color.WHITE);
+
 		//Panel pour les pays
-		panel_pays = new JPanel();
-		panel_pays_gauche = new JPanel();
-		panel_pays_droite = new JPanel();
-		
+		panel_pays = panelStyle(new JPanel(),color_gris_transparent,Color.WHITE);
+		panel_pays_gauche = panelSansBgStyle(new JPanel());
+		panel_pays_droite = panelSansBgStyle(new JPanel());
+
 		//Header
 		label_titre = titreLabelStyle(new JLabel("Créez vos Biathlètes"));
 		label_description = labelStyle(new JLabel(" "));
-		label_choix_pays = sousTitreLabelStyle(new JLabel("Nationalité que vous dirigerez : "));
+		label_choix_pays = labelStyle(new JLabel("Nationalité que vous dirigerez : "));
 		combobox_pays = comboboxStyle(this.creerComboBoxPays());
 		label_pays_image = new JLabel(new ImageIcon(getClass().getResource("/images/drapeau/grand/allemagne.png")));
 		button_alea = mediumButtonStyle(new JButton("Aléatoire"));
-		
+
 		//footer
 		button_valider = mediumButtonStyle(new JButton("Valider"));
 		button_retour = mediumButtonStyle(new JButton("Retour"));
 
 		//homme
 		label_homme_titre = titreLabelStyle(new JLabel("Mon biathlète homme"));
-		label_homme_prenom = sousTitreLabelStyle(new JLabel("Prénom : "));
-		label_homme_nom = sousTitreLabelStyle(new JLabel("Nom : "));
-		label_homme_age = sousTitreLabelStyle(new JLabel("Age : "));
-		label_homme_specialite = sousTitreLabelStyle(new JLabel("Spécialité : "));
-		label_homme_favorite = sousTitreLabelStyle(new JLabel("Course favorite : "));
+		label_homme_prenom = labelStyle(new JLabel("Prénom : "));
+		label_homme_nom = labelStyle(new JLabel("Nom : "));
+		label_homme_age = labelStyle(new JLabel("Age : "));
+		label_homme_specialite = labelStyle(new JLabel("Spécialité : "));
+		label_homme_favorite = labelStyle(new JLabel("Course favorite : "));
 		textfield_homme_prenom = textFieldStyle(new JTextField());
 		textfield_homme_nom = textFieldStyle(new JTextField());
 		combobox_homme_age = comboboxStyle(new JComboBox(list_age));
 		combobox_homme_specialite = comboboxStyle(new JComboBox(list_specialite));
 		combobox_homme_favorite = comboboxStyle(new JComboBox(list_favorite));
 
-		label_homme_photo = sousTitreLabelStyle(new JLabel("Charger une photo : "));
+		label_homme_photo = labelStyle(new JLabel("Charger une photo : "));
 		button_homme_image_gauche = new JButton("<");
 		list_ico_homme_photo = this.setListPhotoDefaut("homme");
 		button_homme_image_droite = new JButton(">");
@@ -373,27 +413,27 @@ public class CreationCarriere extends InterfaceGraphique {
 
 		//Femme
 		label_femme_titre = titreLabelStyle(new JLabel("Mon biathlète femme"));
-		label_femme_prenom = sousTitreLabelStyle(new JLabel("Prénom : "));
-		label_femme_nom = sousTitreLabelStyle(new JLabel("Nom : "));
-		label_femme_age = sousTitreLabelStyle(new JLabel("Age : "));
-		label_femme_specialite = sousTitreLabelStyle(new JLabel("Spécialité : "));
-		label_femme_favorite = sousTitreLabelStyle(new JLabel("Course favorite : "));
+		label_femme_prenom = labelStyle(new JLabel("Prénom : "));
+		label_femme_nom = labelStyle(new JLabel("Nom : "));
+		label_femme_age = labelStyle(new JLabel("Age : "));
+		label_femme_specialite = labelStyle(new JLabel("Spécialité : "));
+		label_femme_favorite = labelStyle(new JLabel("Course favorite : "));
 		textfield_femme_prenom = textFieldStyle(new JTextField());
 		textfield_femme_nom = textFieldStyle(new JTextField());
 		combobox_femme_age = comboboxStyle(new JComboBox(list_age));
 		combobox_femme_specialite = comboboxStyle(new JComboBox(list_specialite));
 		combobox_femme_favorite = comboboxStyle(new JComboBox(list_favorite));
 
-		label_femme_photo = sousTitreLabelStyle(new JLabel("Charger une photo : "));
+		label_femme_photo = labelStyle(new JLabel("Charger une photo : "));
 		button_femme_photo = smallButtonStyle(new JButton("Parcourir"));
 		button_femme_image_gauche = new JButton("<");
 		list_ico_femme_photo = this.setListPhotoDefaut("femme");
 		button_femme_image_droite = new JButton(">");
 	}
-	
-	
+
+
 	public void afficheBorderElement() {
-		
+
 		//On rempli le label de pays 
 		panel_pays_gauche.setLayout(new FlowLayout(FlowLayout.LEFT, 30,10));
 		panel_pays_gauche.add(label_choix_pays);
@@ -406,7 +446,7 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_pays.add(panel_pays_droite);
 		panel_pays_gauche.setBackground(color_bg);
 		panel_pays_droite.setBackground(color_bg);
-		
+
 		//On rempli le header
 		panel_header.setLayout(new GridLayout(3,1));
 		panel_header.add(label_titre);
@@ -461,18 +501,6 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_homme.add(label_homme_titre,BorderLayout.NORTH);
 		panel_homme.add(panel_homme_info_photo,BorderLayout.CENTER);
 
-		//On Change le background
-		panel_homme_age.setBackground(color_bg);
-		panel_homme_photo.setBackground(color_bg);
-		panel_homme_specialite.setBackground(color_bg);
-		panel_homme_favorite.setBackground(color_bg);
-		panel_homme_prenom.setBackground(color_bg);
-		panel_homme_nom.setBackground(color_bg);
-		panel_homme_info.setBackground(color_bg);
-		panel_homme.setBackground(color_bg);
-		panel_homme_button_fleche.setBackground(color_bg);
-		panel_homme_parcourir_photo.setBackground(color_bg);
-
 
 
 		//Rempli chaque panel femme
@@ -519,29 +547,17 @@ public class CreationCarriere extends InterfaceGraphique {
 		panel_femme.add(label_femme_titre,BorderLayout.NORTH);
 		panel_femme.add(panel_femme_info_photo,BorderLayout.CENTER);
 
-		//On Change le background
-		panel_femme_age.setBackground(color_bg);
-		panel_femme_photo.setBackground(color_bg);
-		panel_femme_specialite.setBackground(color_bg);
-		panel_femme_favorite.setBackground(color_bg);
-		panel_femme_prenom.setBackground(color_bg);
-		panel_femme_nom.setBackground(color_bg);
-		panel_femme_info.setBackground(color_bg);
-		panel_femme.setBackground(color_bg);
-		panel_femme_button_fleche.setBackground(color_bg);
-		panel_femme_parcourir_photo.setBackground(color_bg);
 
-		
-		
+
 		//Content
 		panel_content.setLayout(new GridBagLayout());
-		panel_content.add(panelStyle(panel_pays), gbc(0,0,0,0,1,2, new Insets(10,10,10,10) ,GridBagConstraints.BOTH) );
-		panel_content.add(panelStyle(panel_homme),gbc(1,0,0,0,1,1, new Insets(10,10,10,10) ,0) ) ;
-		panel_content.add(panelStyle(panel_femme),gbc(1,1,0,0,1,1, new Insets(10,10,10,10) ,0) );
+		panel_content.add(panel_pays, gbc(0,0,0,0,1,2, new Insets(10,10,10,10) ,GridBagConstraints.BOTH) );
+		panel_content.add(panel_homme,gbc(1,0,0,0,1,1, new Insets(10,10,10,10) ,0) ) ;
+		panel_content.add(panel_femme,gbc(1,1,0,0,1,1, new Insets(10,10,10,10) ,0) );
 
 
 		super.afficheBorderElement();
-		
+
 	}
 
 	public int updateIndicePhoto(String sexe, String incr) {
@@ -580,7 +596,15 @@ public class CreationCarriere extends InterfaceGraphique {
 		}
 	}
 
-
+	public int getEquipeIdCarriere() {
+		ResultSet select_id_equipe = Main.database.requete("Select id_equipe from equipes where libelle_equipe = '" + combobox_pays.getSelectedItem().toString() + "'");
+		try {while(select_id_equipe.next()) {
+			return select_id_equipe.getInt("id_equipe"); 
+			}
+		} catch (SQLException e) {e.printStackTrace();}
+		return 1;
+	}
+	
 
 	public ArrayList<ImageIcon> setListPhotoDefaut(String sexe) {
 		//Liste des photo
@@ -613,5 +637,4 @@ public class CreationCarriere extends InterfaceGraphique {
 
 		return new JComboBox(list_pays);
 	}
-
 }

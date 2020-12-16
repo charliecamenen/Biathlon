@@ -42,8 +42,9 @@ public class Gestion extends InterfaceGraphique implements Runnable {
 	public Gestion() {
 		super();
 		//Créaion du panel du header
-		panel_header = new InterfaceGraphique("/images/gestion/header_bg.png");
-		//panel_header.setBackground(new Color(40,40,40));
+		//panel_header = new InterfaceGraphique("/images/gestion/header_bg.png");
+		panel_header = new InterfaceGraphique("");
+		panel_header.setBackground(new Color( 230, 180, 120 ));
 
 		//Création des boutons de header
 		button_classement = this.headerButtonStyle(new JButton("CLASSEMENT"));

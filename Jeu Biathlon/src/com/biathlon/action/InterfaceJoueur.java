@@ -221,7 +221,7 @@ public class InterfaceJoueur {
 	public void setDrapeauMoi(int id_biathlete) {
 		//Création du drapeau
 		ResultSet resultset = Main.database.requete(""
-				+ "SELECT pays.drapeau_file " 
+				+ "SELECT pays.drapeau_icone_file " 
 				+ "FROM biathletes join equipes on (biathletes.id_equipe = equipes.id_equipe) " 
 				+ "join pays on (equipes.id_pays = pays.id_pays) " 
 				+ "WHERE id_biathlete = " + id_biathlete);
@@ -229,7 +229,7 @@ public class InterfaceJoueur {
 		try {
 			while(resultset.next()) {
 				//ImageIcon icon = new ImageIcon(new ImageIcon("tonImage.jpg").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)); 
-				this.ico_drapeau_moi = new ImageIcon(getClass().getResource(resultset.getString("drapeau_file")));
+				this.ico_drapeau_moi = new ImageIcon(getClass().getResource(resultset.getString("drapeau_icone_file")));
 				this.img_drapeau_moi = this.ico_drapeau_moi.getImage();
 			}
 		} catch (SQLException e) {e.printStackTrace();}
@@ -238,7 +238,7 @@ public class InterfaceJoueur {
 	public void setDrapeauPhysique(int id_biathlete) {
 		//Création du drapeau
 		ResultSet resultset = Main.database.requete(""
-				+ "SELECT pays.drapeau_file " 
+				+ "SELECT pays.drapeau_icone_file " 
 				+ "FROM biathletes join equipes on (biathletes.id_equipe = equipes.id_equipe) " 
 				+ "join pays on (equipes.id_pays = pays.id_pays) " 
 				+ "WHERE id_biathlete = " + id_biathlete);
@@ -246,7 +246,7 @@ public class InterfaceJoueur {
 		try {
 			while(resultset.next()) {
 				//ImageIcon icon = new ImageIcon(new ImageIcon("tonImage.jpg").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)); 
-				this.ico_drapeau_physique = new ImageIcon(getClass().getResource(resultset.getString("drapeau_file")));
+				this.ico_drapeau_physique = new ImageIcon(getClass().getResource(resultset.getString("drapeau_icone_file")));
 				this.img_drapeau_physique = this.ico_drapeau_physique.getImage();
 			}
 		} catch (SQLException e) {e.printStackTrace();}

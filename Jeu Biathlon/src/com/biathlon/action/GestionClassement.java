@@ -44,9 +44,9 @@ public class GestionClassement extends InterfaceGraphique {
 		panel_header = panelSansBgStyle(new JPanel());
 		panel_est = panelSansBgStyle(new JPanel());
 		panel_ouest = panelSansBgStyle(new JPanel());
-		
+
 		this.setDimensionOfBorderElement(50, 100, 150, 150);
-		
+
 		//Panel des filtres pour le tableau
 		panel_filtre = panelSansBgStyle(new JPanel());
 		panel_filtre.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -60,39 +60,33 @@ public class GestionClassement extends InterfaceGraphique {
 
 	protected void afficheElement() {
 		// TODO Auto-generated method stub
-		
-		
+
+
 		panel_filtre.add(combobox_annee);
 		panel_filtre.add(combobox_sexe);
 		panel_filtre.add(combobox_type_course);
 
-		
+
 		tableau = this.genererTableau();
 
 		panel_content.setLayout(new BorderLayout());
 		panel_content.add(panel_filtre,BorderLayout.NORTH);
 		panel_content.add(new JScrollPane(tableau),BorderLayout.CENTER);
-		
+
 		//Affiche les element du boerder latour global
 		super.afficheBorderElement();
-		
+
 	}
-	
+
 	private JTable genererTableau() {
 		DefaultTableCellRenderer[] list_rend = new DefaultTableCellRenderer[] {
 				rendererTable(JLabel.CENTER),
 				rendererTable(JLabel.LEFT),
 				rendererTable(JLabel.CENTER),
 				rendererTable(JLabel.RIGHT)
-			};
-		
+		};
+
 		Object[][] donnees = {
-				{"1.", "J.BOE", ' ', 756},
-				{"2.", "M.FOURCADE", ' ', 720},
-				{"3.", "Q.FILLON MAILLET", ' ', 630},
-				{"1.", "J.BOE", ' ', 756},
-				{"2.", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
 				{"1", "J.BOE", ' ', 756},
 				{"2", "M.FOURCADE", ' ', 720},
 				{"3", "Q.FILLON MAILLET", ' ', 630},
@@ -126,19 +120,36 @@ public class GestionClassement extends InterfaceGraphique {
 		};
 
 		String[] entetes = {"Cls", "Biathlete","Nat", "Pts"};		
-		JTable return_table = new JTableUnmodifiable(
+
+		//Tableau des notes Hommes
+		JTable return_table = new JTable(new MonTableModel(
 				donnees,
 				entetes,
-				new Font("calibri", Font.BOLD, 25),
-				new Font("calibri", Font.PLAIN, 25),
-				40,
-				new int[] {10,900,10,10},
-				false,
-				true, 
-				null,
-				list_rend
-				);
-		
+				null
+				));
+
+		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
+				donnees,
+				entetes,
+				new Color[] {color_tableau_bg_second,color_tableau_bg,color_tableau_bg,color_tableau_bg},//couleur des colonnes 
+				new Color[] {Color.BLACK,Color.WHITE,Color.WHITE,Color.WHITE},//couleur du texte
+				new int[] {10,1000,100,50}, //largeur des colonnes
+				new int[] {JLabel.CENTER,JLabel.LEFT,JLabel.CENTER,JLabel.RIGHT}, //alignement des colonnes
+				new Font[] {new Font("calibri", Font.PLAIN, 25), 
+						new Font("calibri", Font.PLAIN, 25),
+						new Font("calibri", Font.PLAIN, 25), 
+						new Font("calibri", Font.PLAIN, 25)
+				},//Font des lignes
+				true, //lignes horizontales
+				false, // lignes verticales
+				40, //Largeur des lignes
+				null, // font du header
+				null, // couleur de la grid
+				color_tableau_bg, // couleur du GB grobal
+				false,//focus
+				false //select
+				));
+
 		return return_table;
 	}
 

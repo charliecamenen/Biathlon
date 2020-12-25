@@ -167,7 +167,8 @@ public class GestionAccueil extends InterfaceGraphique {
 				//On parcour les courses de la journee
 				try {while(select_course_courrante.next()) {
 					//si elles est n'est pas termineé
-					if(select_course_courrante.getString("statut_course") == "a venir") {
+					if(select_course_courrante.getString("statut_course").equals("a venir")) {
+						System.out.println("ON AVANCE PAS");
 						//Alors on ne change plus de jour
 						changement_jour = false;
 						//Et l'id course est mit a jour
@@ -241,7 +242,7 @@ public class GestionAccueil extends InterfaceGraphique {
 		Main.database.updateDateJoueur(Main.joueur.getId_joueur());
 
 		//Si fin de saison
-		if(true) {
+		if(false) {
 
 			//Update année joueur courrant(joeuur)
 			Main.database.updateAnneeJoueur();
@@ -262,7 +263,7 @@ public class GestionAccueil extends InterfaceGraphique {
 
 
 
-		//Update des partiipants a la prochaine course (participants/membre)
+		//Update des partiipants des courses de la prochaines journées (participants/membre)
 		//SEULEMENT SI CHANGEMENT DE SITE SINON METTRE DANS LA FIN DE LA COURSE
 		//Cherche les courses de la journée suivante
 		ResultSet select_course_suivante = Main.database.requete(""
@@ -661,8 +662,6 @@ public class GestionAccueil extends InterfaceGraphique {
 				));
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
 				new Color[] {color_transparent,color_transparent,color_transparent},//couleur des colonnes 
 				new Color[] {Color.WHITE,Color.WHITE,Color.WHITE},//couleur du texte
 				new int[] {1,1000,300}, //largeur des colonnes
@@ -723,8 +722,7 @@ public class GestionAccueil extends InterfaceGraphique {
 				));
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
+			
 				new Color[] {color_tableau_bg,color_tableau_bg,color_tableau_bg},//couleur des colonnes 
 				new Color[] {Color.WHITE,Color.WHITE,Color.WHITE},//couleur du texte
 				new int[] {200,10,10}, //largeur des colonnes
@@ -777,8 +775,7 @@ public class GestionAccueil extends InterfaceGraphique {
 				));
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
+				
 				new Color[] {color_transparent,color_transparent,color_transparent,color_transparent,color_transparent,color_transparent},//couleur des colonnes 
 				new Color[] {Color.WHITE,Color.WHITE,Color.WHITE,Color.WHITE,Color.WHITE,Color.WHITE},//couleur du texte
 				new int[] {1,1,1,1,1,1}, //largeur des colonnes
@@ -823,8 +820,6 @@ public class GestionAccueil extends InterfaceGraphique {
 
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
 				new Color[] {color_transparent,color_transparent,color_transparent}, 
 				new Color[] {Color.WHITE,Color.WHITE,Color.WHITE},
 				new int[] {50,20,2}, 
@@ -889,8 +884,7 @@ public class GestionAccueil extends InterfaceGraphique {
 
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
+			
 				new Color[] {color_tableau_bg_second,color_tableau_bg,color_tableau_bg}, 
 				new Color[] {Color.BLACK,Color.WHITE,Color.WHITE},
 				new int[] {2,180,10}, 
@@ -935,8 +929,7 @@ public class GestionAccueil extends InterfaceGraphique {
 				));
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
+				
 				new Color[] {color_tableau_bg,color_tableau_bg},//couleur des colonnes 
 				new Color[] {Color.WHITE,Color.WHITE},//couleur du texte
 				new int[] {10,1}, //largeur des colonnes

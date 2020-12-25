@@ -20,9 +20,6 @@ public class MonTableRenderer extends DefaultTableCellRenderer {
 	protected Color tableau_bg_color_default = new Color(0,80,150);
 	protected Color tableau_grid_color_default = new Color(255,255,255);
 
-	private Object[][] donnees;
-	private String[] entetes;
-
 	private Color[] list_color_column_bg;
 	private Color[] list_color_column_fg;
 	private int[] list_width_column;
@@ -39,13 +36,11 @@ public class MonTableRenderer extends DefaultTableCellRenderer {
 	private boolean select;
 
 
-	public MonTableRenderer(Object[][] donnees, String[] entetes, Color[] list_color_column_bg,
+	public MonTableRenderer(Color[] list_color_column_bg,
 			Color[] list_color_column_fg, int[] list_width_column, int[] list_alignement_column,
 			Font[] list_font_column, boolean horizontalLine, boolean verticalLine, int rowHeight, Font headerFont,
 			Color tableau_grid_color, Color tableau_bg_color, boolean focus, boolean select) {
 		super();
-		this.donnees = donnees;
-		this.entetes = entetes;
 		this.list_color_column_bg = list_color_column_bg;
 		this.list_color_column_fg = list_color_column_fg;
 		this.list_width_column = list_width_column;

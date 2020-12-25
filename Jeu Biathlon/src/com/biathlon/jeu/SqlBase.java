@@ -79,7 +79,7 @@ public class SqlBase {
 		ResultSet drop_table_membres = requete("DROP TABLE IF EXISTS membres");
 		ResultSet create_table_membres = requete(""
 				+ "CREATE TABLE membres ("
-				+ "id_biathlete INT,"
+				+ "id_biathlete_carriere INT,"
 				+ "id_participant INT,"
 				+ "nb_pioche INT,"
 				+ "nb_fautes INT"
@@ -190,7 +190,10 @@ public class SqlBase {
 		/**************** INSERT ****************/		
 		ResultSet insert_dates = requete(""
 				+ "INSERT INTO dates (jour_semaine , jour, mois) "
-				+ "VALUES ('Samedi', '30' , '11'),"
+				+ "VALUES "
+				+ " ('Jeudi', '12' , '11'),"
+
+				+ " ('Samedi', '30' , '11'),"
 				+ " ('Dimanche', '01' , '12'),"
 				+ " ('Mercredi', '04' , '12'),"
 				+ " ('Jeudi', '05' , '12'),"
@@ -346,7 +349,7 @@ public class SqlBase {
 
 		ResultSet insert_compet = requete("INSERT INTO competitions (id_compet, lieu_compet, id_pays, background_file) VALUES (1, 'Oestersund', 4, '/images/background/oestersund.png'), (2, 'Hochfilzen', 23, '/images/background/hochfilzen.png'), (3, 'Le Grand Bornand', 17, '/images/background/legrandbornand.png'), (4, 'Oberhof', 16, '/images/background/oberhof.png'), (5, 'Ruhpolding', 16, '/images/background/ruhpolding.png'), (6, 'Pokljuka', 5, '/images/background/pokljuka.png'), (7, 'Antholz', 15, '/images/background/antholz.png'), (8, 'Nove Mesto', 19, '/images/background/novemesto.png'), (9, 'Kontiolathi', 18, '/images/background/kontiolathi.png'), (10, 'Oslo', 10, '/images/background/oslo.png');"
 				);
-		
+
 
 		ResultSet insert_biathletes = requete("INSERT INTO biathletes "
 				+"(id_biathlete, nom_biathlete, prenom_biathlete, libelle_biathlete, id_equipe, annee_biathlete, sexe_biathlete, statut_biathlete, END, ACC, COU, DEB, VIT, SKI, REC, REG, POT, REN) "
@@ -623,8 +626,8 @@ public class SqlBase {
 				);
 	}
 
-	
-	
+
+
 	public void creerJoueur() {
 		//Mise a jour de la table joueur
 		ResultSet insert_joueur = Main.database.requete(
@@ -802,92 +805,92 @@ public class SqlBase {
 		Object[][][] liste_type_course_default = new Object[][][]
 				{
 			{//Ostersund
-				{1,2},
-				{1,1},
-				{2,5},
-				{2,6},
-				{3,11},
-				{4,12},
-				{5,3},
-				{6,4}
+				{2,2},
+				{2,1},
+				{3,5},
+				{3,6},
+				{4,11},
+				{5,12},
+				{6,3},
+				{7,4}
 			},
 			{//Hochfilzen
-				{7,6},
-				{7,5},
-				{8,4},
-				{8,7},
-				{9,8},
-				{9,3}
+				{8,6},
+				{8,5},
+				{9,4},
+				{9,7},
+				{10,8},
+				{10,3}
 			},
 			{//Le grand Bornand
-				{10,5},
-				{11,6},
-				{12,7},
-				{12,8},
-				{13,9},
-				{13,10}
+				{11,5},
+				{12,6},
+				{13,7},
+				{13,8},
+				{14,9},
+				{14,10}
 			},
 			{//Oberhof
-				{14,6},
-				{15,5},
-				{16,4},
-				{16,3},
-				{17,10},
-				{17,9}
+				{15,6},
+				{16,5},
+				{17,4},
+				{17,3},
+				{18,10},
+				{18,9}
 			},
 			{//Rupolding
-				{18,6},
-				{19,5},
-				{20,4},
-				{21,3},
-				{22,8},
-				{22,7}
+				{19,6},
+				{20,5},
+				{21,4},
+				{22,3},
+				{23,8},
+				{23,7}
 			},
 			{//Polkljiuka
-				{23,11},
-				{24,12},
-				{25,2},
-				{25,1},
-				{26,9},
-				{26,10}
+				{24,11},
+				{25,12},
+				{26,2},
+				{26,1},
+				{27,9},
+				{27,10}
 			},
 			{//Mondiaux
-				{27,1},
-				{28,6},
-				{29,5},
-				{30,7},
-				{30,8},
-				{31,12},
-				{32,11},
-				{33,2},
-				{34,4},
-				{34,3},
-				{35,9},
-				{35,10}
+				{28,1},
+				{29,6},
+				{30,5},
+				{31,7},
+				{31,8},
+				{32,12},
+				{33,11},
+				{34,2},
+				{35,4},
+				{35,3},
+				{36,9},
+				{36,10}
 			},
 			{//Nove mesto
-				{36,6},
-				{37,5},
-				{38,3},
-				{38,4},
-				{39,9},
-				{39,10}
+				{37,6},
+				{38,5},
+				{39,3},
+				{39,4},
+				{40,9},
+				{41,10}
 			},
 			{//Kontiolahti
-				{40,6},
-				{41,5},
-				{42,8},
-				{42,7},
-				{43,2},
-				{43,1}
+				{42,6},
+				{42,5},
+				{43,8},
+				{43,7},
+				{44,2},
+				{44,1}
 			},
 			{//Kontiolahti
-				{44,5},
-				{44,6},
-				{45,8},
-				{45,7},
-				{46,10},
-				{46,9}
+				{45,5},
+				{45,6},
+				{46,8},
+				{46,7},
+				{47,10},
+				{47,9}
 			}};
 
 			//List des compet_id et ceux deja tiré
@@ -932,7 +935,7 @@ public class SqlBase {
 				}
 			}
 	}
-	
+
 	public int getBareme(int classement) {
 		if(classement < 41) {
 			return classement;
@@ -940,21 +943,22 @@ public class SqlBase {
 			return 100;
 		}
 	}
-	
+
 	//Inserrer une ligne dans participant
 	public void insertLigneParticipant(int id_course, int nb_lignes) {
 		for(int i = 0 ; i < nb_lignes; i++) {
-		ResultSet insert_participants = Main.database.requete(								
-				"INSERT INTO participants "
-						+ "(id_course, classement, temps, id_bareme) "
-						+ "VALUES ("
-						+ id_course +","
-						+ 0 + " , " 
-						+ 0 + " , "
-						+ 100 + ");"
-				);
+			ResultSet insert_participants = Main.database.requete(								
+					"INSERT INTO participants "
+							+ "(id_course, classement, temps, id_bareme) "
+							+ "VALUES ("
+							+ id_course +","
+							+ 0 + " , " 
+							+ 0 + " , "
+							+ 100 + ");"
+					);
 		}
 	}
+
 	//Inserer une ligne dans membre
 	public void insertLigneMembreIndividuel(int id_course,ArrayList<Integer> liste_participants) {
 		//liste des participants de la course en question
@@ -965,33 +969,34 @@ public class SqlBase {
 			//insert un membre
 			ResultSet insert_membre = Main.database.requete(								
 					"INSERT INTO membres "
-							+ "(id_biathlete, id_participant, nb_pioche, nb_fautes) "
+							+ "(id_biathlete_carriere, id_participant, nb_pioche, nb_fautes) "
 							+ "VALUES ("
 							+ liste_participants.get(cpt) + ","
 							+ select_participant_course.getInt("id_participant") + " , " 
 							+ 0 + " , "
 							+ 0 + ");"
 					);
-			
+
 			//on incrémente le compteur
 			cpt +=1;
-			
+
 		}} catch (SQLException ex) {ex.printStackTrace();}
 	}
-	
+
 	public void insertLigneMembreEquipe(int id_course,ArrayList<ArrayList<Integer>> liste_participants) {
 		//liste des participants de la course en question
 		ResultSet select_participant_course = Main.database.requete("SELECT * from participants where id_course = " + id_course);
-		//Boucle sur les participants
+
+		//Boucle sur les equipes
 		int cpt = 0;
 		try {while(select_participant_course.next()) {
-			
+
 			//boucle sur les membres de l'équipe
 			for(int i = 0 ; i < liste_participants.get(cpt).size() ; i++) {
 				//insert un membre
 				ResultSet insert_membre = Main.database.requete(								
 						"INSERT INTO membres "
-								+ "(id_biathlete, id_participant, nb_pioche, nb_fautes) "
+								+ "(id_biathlete_carriere, id_participant, nb_pioche, nb_fautes) "
 								+ "VALUES ("
 								+ liste_participants.get(cpt).get(i) + ","
 								+ select_participant_course.getInt("id_participant") + " , " 
@@ -999,69 +1004,518 @@ public class SqlBase {
 								+ 0 + ");"
 						);
 			}
+
 			//on incrémente le compteur
 			cpt +=1;
-			
+
 		}} catch (SQLException ex) {ex.printStackTrace();}
 	}
 
+	public ArrayList<Integer> listParticipantsSprintIndiv(String sexe){
+		ArrayList<Integer> liste_participants_individuel = new ArrayList<>();
+		//Select les 110 meilleur biathletes 
+		//AMELIORER EN RESPECTANT LES QUOTAS PAR NATIONS !!!
+		ResultSet select_biathletes = Main.database.requete(			
+				"SELECT biathletescarriere.* "
+						+ "FROM biathletescarriere join biathletes on biathletes.id_biathlete = biathletescarriere.id_biathlete "
+						+ "where biathletes.sexe_biathlete = '"+ sexe +"' "
+						+ "and biathletescarriere.statut_biathlete = 'actif' "
+						+ "and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur() + " "
+						+ "ORDER BY biathletescarriere.REN DESC LIMIT 110"
+				);
+
+		//Parcour les biathletes pour réccupérer l'ID
+		try {while(select_biathletes.next()) {
+			liste_participants_individuel.add(select_biathletes.getInt("id_biathlete_carriere"));
+		}} catch (SQLException ex) {ex.printStackTrace();}
+
+		return liste_participants_individuel;
+	}
+
+	public ArrayList<Integer> listParticipantsPoursuite(String sexe){
+		ArrayList<Integer> liste_participants_individuel = new ArrayList<>();
+		//Select les 60 meilleur biathletes de la poursuite
+		//Classe les biathlete selon leur temps d'arrivé
+		ResultSet select_participants = Main.database.requete("SELECT biathletescarriere.* , participants.temps "
+				+" FROM biathletescarriere join biathletes on biathletes.id_biathlete = biathletescarriere.id_biathlete "
+				+" join membres on biathletescarriere.id_biathlete_carriere = membres.id_biathlete_carriere "
+				+" join participants on membres.id_participant = participants.id_participant "
+				+" where biathletes.sexe_biathlete = '" + sexe +"' "
+				//Recupere l'ID du sprint
+				+" and id_course IN ("
+				+" SELECT id_course "
+				+" FROM courses "
+				//Por le joueur courrant
+				+" WHERE id_joueur = " + Main.joueur.getId_joueur()
+				//Pour la competition courrante
+				+" and id_compet IN ( "
+				+ "SELECT id_compet From courses where id_course = " + Main.joueur.getId_course_courrante() + " ) "
+				//Pour l'année courrante
+				+" and annee = " + Main.joueur.getAnnee()
+				//Pour le sprint
+				+" and ( id_type_course = 5 OR id_type_course = 6)"
+				+"  )"
+				//Tri par temps et prend les 60 premiers
+				+" ORDER BY participants.temps ASC LIMIT 60"
+				);
+
+		//Parcour les biathletes pour réccupérer l'ID
+		try {while(select_participants.next()) {
+			liste_participants_individuel.add(select_participants.getInt("id_biathlete_carriere"));
+		}} catch (SQLException ex) {ex.printStackTrace();}
+
+		return liste_participants_individuel;
+	}
+
+	public String selectClassement(int annee , int id_type_course ,String sexe, int id_course, int limit, boolean equipe) {
+		//Id compet sera utile pour les 5 meileur pour les mass start
+		String requete = "";
+
+		requete = requete + "SELECT biathletes.nom_biathlete, biathletes.prenom_biathlete, biathletescarriere.id_biathlete_carriere , SUM(bareme.point) as pts FROM " + 
+				"biathletes join biathletescarriere on biathletescarriere.id_biathlete = biathletes.id_biathlete " + 
+				"join membres on membres.id_biathlete_carriere = biathletescarriere.id_biathlete_carriere " + 
+				"join participants on membres.id_participant = participants.id_participant " + 
+				"join bareme on bareme.id_bareme = participants.id_bareme " + 
+				"join courses on courses.id_course = participants.id_course " + 
+				" Where biathletescarriere.id_joueur = " + Main.joueur.getId_joueur();
+
+		//Si on tri par sexe
+		if(sexe != "") {
+			requete = requete + " and biathletes.sexe_biathlete = '"+sexe+"' ";
+		}
+		
+		//Si on tri par type de course
+		if(id_type_course != 0) {
+			requete = requete + " and courses.id_type_course = " + id_type_course;
+		}
+
+		//Si on tri par sexe
+		if(annee != 0) {
+			requete = requete + " and courses.annee = "+annee+" ";
+		}
+
+		//Si il ne s(agit pas d'une compet en particulier
+		if(id_course !=0) {
+			requete = requete + " and courses.id_compet IN (SELECT courses.id_compet FROM courses Where id_course = "+id_course+") " ;
+		}
+		
+		//Si on tri par equipe (A MODIFIER C EST PAS AUSSI SIMPLE)
+		if(equipe == true) {
+			requete = requete + " group by biathletescarriere.id_equipe" ;
+		}else {
+			requete = requete + " group by biathletescarriere.id_biathlete_carriere" ;
+		}
+		
+		//on ordonne par points 
+		requete = requete + " order By pts DESC ";
+		
+		//Si on doit ajouter une limite
+		if(limit!=0) {
+			requete = requete + " LIMIT " + limit;
+		}
+		System.out.println("--- CLASSEMENT ---");
+		System.out.println(requete);
+		return requete;
+	}
+
+	public ArrayList<Integer> listParticipantsMassStart(String sexe){
+		ArrayList<Integer> liste_participants_individuel = new ArrayList<>();
+		//Select les 110 meilleur biathletes 
+		//AMELIORER EN RESPECTANT LES QUOTAS PAR NATIONS !!!
+		ResultSet select_biathletes_25 = Main.database.requete(			
+				
+				"SELECT biathletescarriere.id_biathlete_carriere , SUM(bareme.point) as pts FROM " + 
+						"biathletes join biathletescarriere on biathletescarriere.id_biathlete = biathletes.id_biathlete " + 
+						"join membres on membres.id_biathlete_carriere = biathletescarriere.id_biathlete_carriere " + 
+						"join participants on membres.id_participant = participants.id_participant " + 
+						"join bareme on bareme.id_bareme = participants.id_bareme " + 
+						"join courses on courses.id_course = participants.id_course " + 
+						" Where biathletes.sexe_biathlete = '"+sexe+"' " +
+						" and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur() +
+						" group by biathletescarriere.id_biathlete_carriere" + 
+						" order By pts DESC LIMIT 25"
+				);
+
+		//Parcour les biathletes pour réccupérer l'ID
+		try {while(select_biathletes_25.next()) {
+			liste_participants_individuel.add(select_biathletes_25.getInt("id_biathlete_carriere"));
+		}} catch (SQLException ex) {ex.printStackTrace();}
+
+		ResultSet select_biathletes_5 = Main.database.requete(	
+				selectClassement(Main.joueur.getAnnee(), 0, sexe, Main.joueur.getId_course_courrante(), 0, false)
+				);
+		
+
+		//Parcour les biathletes pour réccupérer l'ID
+		try {while(select_biathletes_5.next()) {
+
+			//Si on a pas nos 30 participants
+			if(liste_participants_individuel.size() < 30) {
+
+				//si il n'y est pas deja 
+				if(liste_participants_individuel.contains(select_biathletes_5.getInt("id_biathlete_carriere")) == false) {
+					//on l'ajoute
+					liste_participants_individuel.add(select_biathletes_5.getInt("id_biathlete_carriere"));
+				}
+			}else {
+				break;
+			}
+
+		}} catch (SQLException ex) {ex.printStackTrace();}
+
+
+
+		return liste_participants_individuel;
+	}
+
+	public ArrayList<ArrayList<Integer>> listParticipantsRelais(String sexe , int nb_relayeur){
+		ArrayList<ArrayList<Integer>> liste_participants_equipes = new ArrayList<>();
+		ArrayList<Integer> liste_membres;
+
+		//Si c'est mixte
+		if(sexe == "M") {
+
+			//Femme et Hommes
+			ResultSet select_equipes = Main.database.requete(""
+					+" SELECT id_equipe,count(*) as nb_membre"
+					+" FROM biathletes join biathletescarriere on biathletescarriere.id_biathlete = biathletes.id_biathlete"
+					+" WHERE biathletescarriere.statut_biathlete = 'actif'"
+					+" and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur()
+					+" group by id_equipe, sexe_biathlete"
+					+" HAVING nb_membre >= " + nb_relayeur
+					);
+
+			//ON FAUT UNE METHODE DE BAISE MAIS FLEMME DE REFLECHIR
+
+			ArrayList list_equipe = new ArrayList<>();
+			ArrayList list_equipe_1 = new ArrayList<>();
+			System.out.println(list_equipe_1);
+			//on parcour les équipes pour ajouter les membres
+			try {while(select_equipes.next()) {
+				//Si l'id aparait déja une fois
+				if(list_equipe_1.contains(select_equipes.getInt("id_equipe"))) {
+					//on l'ajoute pour valider la participation
+					list_equipe.add(select_equipes.getInt("id_equipe"));
+				}
+				//On ajoue dans la liste id_equipe_1
+				list_equipe_1.add(select_equipes.getInt("id_equipe"));
+			}} catch (SQLException ex) {ex.printStackTrace();}
+
+			System.out.println(list_equipe);
+
+			//On boule sur les equipe selectionnées
+			for (int i = 0 ; i<list_equipe.size();i++) {
+
+				//liste des mambres de l'équipe
+				liste_membres = new ArrayList<>();
+
+				//On itere en fonction du nombre de memrbe dans l'équipe
+				for(int j=3 ; j > nb_relayeur;j--) {
+					//Les deux femmes
+					ResultSet select_participants_f = Main.database.requete(""
+							+ "select biathletes.libelle_biathlete ,biathletescarriere.* ,"
+							//on définit un score
+							+ " (biathletescarriere.COU + biathletescarriere.SKI + biathletescarriere.REN) AS score"
+							+" from biathletescarriere join biathletes on biathletescarriere.id_biathlete = biathletes.id_biathlete"
+							+" where biathletes.id_equipe = " + list_equipe.get(i)
+							+" and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur()
+							+" and biathletescarriere.statut_biathlete = 'actif'"
+							+" and biathletes.sexe_biathlete = 'F' "
+							//On tri en décroissant par rapport au score calculé
+							+" order by score DESC LIMIT " + nb_relayeur);
+
+					//on parcour les équipes pour ajouter les membres
+					try {while(select_participants_f.next()) {
+						//On rempli la liste des biathletes
+						liste_membres.add(select_participants_f.getInt("id_biathlete_carriere"));
+
+					}} catch (SQLException ex) {ex.printStackTrace();}
+
+					//Les deux femmes
+					ResultSet select_participants_h = Main.database.requete(""
+							+ "select biathletes.libelle_biathlete ,biathletescarriere.* ,"
+							//on définit un score
+							+ " (biathletescarriere.COU + biathletescarriere.SKI + biathletescarriere.REN) AS score"
+							+" from biathletescarriere join biathletes on biathletescarriere.id_biathlete = biathletes.id_biathlete"
+							+" where biathletes.id_equipe = " + list_equipe.get(i)
+							+" and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur()
+							+" and biathletescarriere.statut_biathlete = 'actif'"
+							+" and biathletes.sexe_biathlete = 'H' "
+							//On tri en décroissant par rapport au score calculé
+							+" order by score DESC LIMIT " + nb_relayeur);
+
+					//on parcour les équipes pour ajouter les membres
+					try {while(select_participants_h.next()) {
+
+						//On rempli la liste des biathletes
+						liste_membres.add(select_participants_h.getInt("id_biathlete_carriere"));
+
+					}} catch (SQLException ex) {ex.printStackTrace();}
+
+				}
+				liste_participants_equipes.add(liste_membres);
+			}
+
+
+
+		}else {
+			//sinon
+			ResultSet select_equipes = Main.database.requete(""
+					+" SELECT id_equipe,count(*) as nb_membre"
+					+" FROM biathletes join biathletescarriere on biathletescarriere.id_biathlete = biathletes.id_biathlete"
+					+" WHERE biathletescarriere.statut_biathlete = 'actif'"
+					+" and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur()
+					+" and biathletes.sexe_biathlete = '"+ sexe +"' "
+					+" group by id_equipe"
+					+" HAVING nb_membre >=" + nb_relayeur
+					);
+
+			//on parcour les équipes pour ajouter les membres
+			try {while(select_equipes.next()) {
+
+				//liste des mambres de l'équipe
+				liste_membres = new ArrayList<>();
+
+				//Les deux femmes
+				ResultSet select_participants = Main.database.requete(""
+						+ "select biathletes.libelle_biathlete ,biathletescarriere.* ,"
+						//on définit un score
+						+ " (biathletescarriere.COU + biathletescarriere.SKI + biathletescarriere.REN) AS score"
+						+" from biathletescarriere join biathletes on biathletescarriere.id_biathlete = biathletes.id_biathlete"
+						+" where biathletes.id_equipe = " + select_equipes.getInt("id_equipe")
+						+" and biathletescarriere.id_joueur = " + Main.joueur.getId_joueur()
+						+" and biathletescarriere.statut_biathlete = 'actif'"
+						+" and biathletes.sexe_biathlete = '"+sexe+"' "
+						//On tri en décroissant par rapport au score calculé
+						+" order by score DESC LIMIT " + nb_relayeur);
+
+				//on parcour les équipes pour ajouter les membres
+				try {while(select_participants.next()) {
+					//On rempli la liste des biathletes
+					liste_membres.add(select_participants.getInt("id_biathlete_carriere"));
+
+				}} catch (SQLException ex) {ex.printStackTrace();}
+
+
+				liste_participants_equipes.add(liste_membres);
+			}} catch (SQLException ex) {ex.printStackTrace();}
+
+		}
+
+		return liste_participants_equipes;
+	}
+
+
+
+	public void selectResultat() {
+
+	}
+
+
 	//Initialise la table membre et participants avant la course
 	public void initCourse(ResultSet course) {
-		
+		ArrayList<ArrayList<Integer>> liste_participants_equipes = new ArrayList<>();
+		ArrayList<Integer> liste_participants_individuel = new ArrayList<>();
+
+
 		try {
 			switch(course.getInt("id_type_course")) {
-			case 1:
+			case 1://Relai mixte
+
+				//Liste des participants
+				liste_participants_equipes = listParticipantsRelais("M",2);
+
 				//On créé les lignes dans participants
-				insertLigneParticipant(course.getInt("id_course"),25);
-				
-				//liste des id a inserer
-				ArrayList<Integer> liste_participants = new ArrayList<>();
-				
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_equipes.size());
+
 				//Remplire la liste des biathletes 
-				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants);
-				
+				insertLigneMembreEquipe(course.getInt("id_course"),liste_participants_equipes);
+
 				break;
-			case 2:
+			case 2://relai mixte simple
+
+				//Liste des participants
+				liste_participants_equipes = listParticipantsRelais("M",1);
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_equipes.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreEquipe(course.getInt("id_course"),liste_participants_equipes);
 				break;
-			case 3:
+			case 3://relain homme
+
+				//Liste des participants
+				liste_participants_equipes = listParticipantsRelais("H",4);
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_equipes.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreEquipe(course.getInt("id_course"),liste_participants_equipes);
 				break;
-			case 4:
+			case 4://relai femme
+
+				//Liste des participants
+				liste_participants_equipes = listParticipantsRelais("F",4);
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_equipes.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreEquipe(course.getInt("id_course"),liste_participants_equipes);
+
 				break;
-			case 5:
+			case 5://sprint homme
+				//Liste des participants
+				liste_participants_individuel = listParticipantsSprintIndiv("H");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 6:
+			case 6://sprint femme
+				//Liste des participants
+				liste_participants_individuel = listParticipantsSprintIndiv("F");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 7:
+			case 7://poursuite homme
+
+				//Liste des participants
+				liste_participants_individuel = listParticipantsPoursuite("H");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 8:
+			case 8://poursuite femme
+
+				//Liste des participants
+				liste_participants_individuel = listParticipantsPoursuite("F");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 9:
+			case 9://masss start homme
+
+				//Liste des participants
+				liste_participants_individuel = listParticipantsMassStart("H");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 10:
+			case 10://mass start femme
+
+				//Liste des participants
+				liste_participants_individuel = listParticipantsMassStart("F");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 11:
+			case 11://indiv homme
+				//Liste des participants
+				liste_participants_individuel = listParticipantsSprintIndiv("H");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
-			case 12:
+			case 12://indiv femme
+
+				//Liste des participants
+				liste_participants_individuel = listParticipantsSprintIndiv("F");
+
+				//On créé les lignes dans participants
+				insertLigneParticipant(course.getInt("id_course"),liste_participants_individuel.size());
+
+				//Remplire la liste des biathletes 
+				insertLigneMembreIndividuel(course.getInt("id_course"),liste_participants_individuel);
 				break;
 			}
 		} catch (SQLException e) {e.printStackTrace();}
 	}
-	
+
 	//Met a jour la table participant lorsqu'un biathlete a fini sa course
 	//Met a jour la table membre aussi
 	public void courseTermineBiathlete(int id_participant, int id_biathlete, int temps, int nb_pioches, int nb_fautes) {
-		
+		//Met a jour la table membre
+		ResultSet update_membre = Main.database.requete(
+				"UPDATE membres "
+						+ "SET nb_fautes = " + nb_fautes + " , "
+						+ " nb_pioche = " + nb_pioches
+						+ " WHERE id_participant = " + id_participant
+						+ " AND id_biathlete_carriere = " + id_biathlete
+				);
+		//Met a jour la table participant
+		ResultSet update_participant = Main.database.requete(
+				"UPDATE participants "
+						+ "SET temps = " + temps
+						+ " WHERE id_participant = " + id_participant
+				);
 	}
-	
+
 	//Met a jour la table de participants quand la course est terminé
 	public void updateParticipationCourseTermine(int id_course){
-		
+
+		//Classe les biathlete selon leur temps d'arrivé
+		ResultSet select_participants = Main.database.requete(
+				"SELECT * FROM participants "
+						+ "	WHERE id_course = " + id_course
+						+ "	ORDER by temps ASC"
+				);
+		int classement = 1;
+
+		//mise a jour de la table participant
+		try {while(select_participants.next()) {
+			//met a jour le classement
+			ResultSet update_classement_participant = Main.database.requete(
+					"UPDATE participants "
+							+ "SET classement = " + classement
+							+ " WHERE id_participant = "  + select_participants.getInt("id_participant")
+					);
+
+			//met a jour le bareme
+			if(classement <= 40) {
+				ResultSet update_bareme_participant = Main.database.requete(
+						"UPDATE participants "
+								+ "SET id_bareme = " + classement
+								+ " WHERE id_participant = " + select_participants.getInt("id_participant")
+						);
+			}
+
+			//on incrémente le classement
+			classement +=1;
+		}} catch (SQLException ex) {ex.printStackTrace();}
+
+		//COnsidere que la course est terminé
+		ResultSet update_course = Main.database.requete(
+				"UPDATE courses "
+						+ "SET statut_course = 'termine'"
+						+ " WHERE id_course = " + id_course
+				);
+
 	}
-	
-	//Mise a jour des pioches et fautes dan sla table membre
-	public void updateFautesPioches() {
-		
-	}
+
 
 	public void updateDateJoueur(int id_joueur) {
 		//fait l'update sur la base
@@ -1070,7 +1524,7 @@ public class SqlBase {
 				+ "Set id_date = id_date + 1 "
 				+ "WHERE id_joueur = " + id_joueur
 				);
-		
+
 		Main.joueur.setId_date_courrante(Main.joueur.getId_date_courrante()+1);
 	}
 

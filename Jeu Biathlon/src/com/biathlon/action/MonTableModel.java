@@ -23,7 +23,25 @@ public class MonTableModel extends DefaultTableModel{
 		//liste des colonnes contenant des checkbox
 		this.colonne_cb_list = colonne_cb_list;
 	}
-
+	
+	public MonTableModel(ArrayList<Object[]> donnees, String[] entetes, ArrayList<Integer> colonne_cb_list) {
+		super(arrayListToTableau(donnees), entetes);
+		//liste des colonnes contenant des checkbox
+		this.colonne_cb_list = colonne_cb_list;
+	}
+	
+	private static Object[][] arrayListToTableau(ArrayList<Object[]> list_donnees) {
+		
+		Object[][] data = new Object[list_donnees.size()][list_donnees.get(0).length];
+		
+		//parcour l'arraylist
+		for(int i = 0 ; i < list_donnees.size(); i++)
+			//On rempli chaque ligne du tableau
+			data[i] = list_donnees.get(i);
+		
+		return data;
+	}
+	
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		boolean editable = false;
@@ -51,25 +69,3 @@ public class MonTableModel extends DefaultTableModel{
 
 }
 
-/*public class JTableUnmodifiable extends JTable {
-
-		protected Color tableau_bg_color = new Color(0,80,150);
-		protected Color tableau_txt_color = new Color(255,255,255);
-		protected Color tableau_grid_color = new Color(255,255,255);
-
-		private Object[][] donnees;
-		private String[] entetes;
-
-		public JTableUnmodifiable( Object[][] donnees, String[] entetes) {
-			super(donnees,entetes);
-		}
-
-		//On ne rend pas éditable toutes les cellules 
-		public boolean isCellEditable(int row, int col) {
-			return false;
-		}
-
-
-
-
-	}*/

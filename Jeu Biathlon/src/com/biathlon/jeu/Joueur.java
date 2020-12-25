@@ -104,25 +104,38 @@ public class Joueur {
 
 		//On parcour les participanrs de la course*****
 		try {while(select_participants.next()) {
-			//Selectionne les membres qui corresponde a l'id participants
-			ResultSet select_membres = Main.database.requete(""
-					+ "SELECT * "
-					+ "FROM participants "
-					+ "WHERE id_course = " + select_participants.getInt("id_participant")
+			
+			//Selectionne la liste des biathletes qui corresponde à l'id participants
+			ResultSet select_biathletes = Main.database.requete(""
+					+ "SELECT biathletescarriere.* "
+					+ "FROM biathletescarriere join membres on biathletescarriere.id_biathlete_carriere = membres.id_biathlete_carriere "
+					+ "WHERE id_participant = "  + select_participants.getInt("id_participant")
 					);
-			try {while(select_membres.next()) {
+			
+			//on parcour les biathletes de la course 
+			try {while(select_biathletes.next()) {
 				
 				//Simulation des 3 parametres avec les notes du biathlete
+				int temps_simulation = 0;
+				int nb_fautes_simulation = 0;
+				int nb_pioches_simulation = 0;
 				
+				for(int i = 0; i<10;i++) {
+					nb_fautes_simulation += (int) Math.floor(Math.random() + (double)(1-(double)select_biathletes.getInt("DEB")/100));
+				}
+				
+				//MODIFIER PARCE QUE C4EST PAS BON
+				temps_simulation += (int) Math.round((double)1760000 - 4000 * (((double)Math.random()*10 -5)  + (double)select_biathletes.getInt("SKI"))) + nb_fautes_simulation * 25000;
 				
 				//On appel la fonction qui calcul les classement et les baremes
 				Main.database.courseTermineBiathlete(
-						select_membres.getInt("id_participant"),
-						select_membres.getInt("id_biathlete"),
-						1000000,
+						select_participants.getInt("id_participant"),
+						select_biathletes.getInt("id_biathlete_carriere"),
+						temps_simulation,
 						0,
-						2
+						nb_fautes_simulation
 						);
+				
 			}} catch (SQLException ex) {ex.printStackTrace();}
 		}} catch (SQLException ex) {ex.printStackTrace();}
 		

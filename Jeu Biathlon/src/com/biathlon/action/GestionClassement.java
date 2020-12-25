@@ -6,6 +6,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.lang.reflect.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -14,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import com.biathlon.jeu.Main;
 
 public class GestionClassement extends InterfaceGraphique {
 
@@ -86,38 +92,24 @@ public class GestionClassement extends InterfaceGraphique {
 				rendererTable(JLabel.RIGHT)
 		};
 
-		Object[][] donnees = {
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-				{"1", "J.BOE", ' ', 756},
-				{"2", "M.FOURCADE", ' ', 720},
-				{"3", "Q.FILLON MAILLET", ' ', 630},
-		};
+		ResultSet select_classement = Main.database.requete(	
+				Main.database.selectClassement(Main.joueur.getAnnee(), 0, "H", Main.joueur.getId_course_courrante(), 0, false)
+		);
+		
+		ArrayList<Object[]> donnees = new ArrayList<>();
+		int classement = 1;
+		//Parcour les biathletes pour réccupérer l'ID
+		try {while(select_classement.next()) {
+			donnees.add(new Object[]{
+				" " + classement,
+				" " + select_classement.getString("nom_biathlete") +" "+ select_classement.getString("prenom_biathlete"),
+				" ",
+				" "+ select_classement.getInt("pts")}
+			);
+			classement +=1;
+
+		}} catch (SQLException ex) {ex.printStackTrace();}
+		
 
 		String[] entetes = {"Cls", "Biathlete","Nat", "Pts"};		
 
@@ -129,8 +121,6 @@ public class GestionClassement extends InterfaceGraphique {
 				));
 
 		return_table.setDefaultRenderer(Object.class, new MonTableRenderer(
-				donnees,
-				entetes,
 				new Color[] {color_tableau_bg_second,color_tableau_bg,color_tableau_bg,color_tableau_bg},//couleur des colonnes 
 				new Color[] {Color.BLACK,Color.WHITE,Color.WHITE,Color.WHITE},//couleur du texte
 				new int[] {10,1000,100,50}, //largeur des colonnes
